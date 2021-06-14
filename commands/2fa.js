@@ -4,7 +4,7 @@ const verifyArgs = require('../helpers/verify-arguments');
 module.exports = {
   name: '2fa',
   description: 'Steam Guard Authentication',
-  execute(prefix, commands, message, args, user = []) {
+  execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) return;
 

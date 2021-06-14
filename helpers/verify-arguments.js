@@ -71,5 +71,10 @@ module.exports = (args, type) => {
       if (args.length > 2) return false;
 
       return true;
+    case 'admin':
+      // return if no arguments provided
+      if (!args.length) return false;
+
+      return true;
   }
 };

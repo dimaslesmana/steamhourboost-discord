@@ -8,7 +8,7 @@ const shbLicenseCategoryId = "839120441049743370";
 module.exports = {
   name: 'license',
   description: 'See more about this command.',
-  async execute(prefix, commands, message, args, user = []) {
+  async execute(client, prefix, commands, message, args, user = []) {
     if (!verifyArgs(args, 'license')) {
       message.reply(
         "\n**Steam-HourBoost | License**" +

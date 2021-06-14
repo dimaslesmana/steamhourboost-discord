@@ -34,7 +34,7 @@ steamBots.new = (account) => {
     }
 
     if (steamAccount.discordClient == null) {
-      console.log(msg);
+      console.log(`${log('steam')} ${msg}`);
       return;
     }
 

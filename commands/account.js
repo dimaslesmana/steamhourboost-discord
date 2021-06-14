@@ -7,7 +7,7 @@ const { steamBots, steamAccounts } = require('../steamClient');
 module.exports = {
   name: 'account',
   description: 'See more about this command.',
-  async execute(prefix, commands, message, args, user = []) {
+  async execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) return;
 

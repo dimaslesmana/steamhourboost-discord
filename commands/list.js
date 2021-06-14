@@ -4,7 +4,7 @@ const log = require('../helpers/logger');
 module.exports = {
   name: 'list',
   description: 'List of your accounts.',
-  async execute(prefix, commands, message, args, user = []) {
+  async execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) return;
 

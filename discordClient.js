@@ -30,7 +30,7 @@ const commands = {
   manage: 'manage',
   start: 'start',
   stop: 'stop',
-  restart_boost: 'restart-boost',
+  admin: 'admin',
 };
 
 discordBot.start = () => {
@@ -58,7 +58,7 @@ discordBot.start = () => {
 
     try {
       const user = await knex(db.table.discord).where({ discord_id: message.author.id });
-      client.commands.get(command).execute(prefix, commands, message, args, user);
+      client.commands.get(command).execute(client, prefix, commands, message, args, user);
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
       message.reply("Oops! Something went wrong.");

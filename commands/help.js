@@ -1,7 +1,7 @@
 module.exports = {
   name: 'help',
   description: 'Help command!',
-  execute(prefix, commands, message, args, user = []) {
+  execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) {
       message.reply(

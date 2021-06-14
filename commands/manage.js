@@ -5,7 +5,7 @@ const log = require('../helpers/logger');
 module.exports = {
   name: 'manage',
   description: 'Manage specified Steam account.',
-  async execute(prefix, commands, message, args, user = []) {
+  async execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) return;
 
