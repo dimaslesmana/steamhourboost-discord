@@ -1,0 +1,55 @@
+CREATE DATABASE steamhourboost_discord;
+\c steamhourboost_discord;
+
+CREATE TABLE license_type (
+	type_id CHAR(4) NOT NULL PRIMARY KEY,
+	description VARCHAR(50) NOT NULL,
+	created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE discord_accounts (
+  id SERIAL PRIMARY KEY,
+	discord_id VARCHAR UNIQUE,
+	account_type CHAR(4) REFERENCES license_type(type_id) ON UPDATE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE steam_accounts (
+  id SERIAL PRIMARY KEY,
+	owner_id INT NOT NULL REFERENCES discord_accounts(id) ON UPDATE CASCADE,
+	is_running BOOLEAN NOT NULL DEFAULT FALSE,
+	username VARCHAR NOT NULL UNIQUE,
+	password VARCHAR[] NOT NULL,
+	loginkey VARCHAR DEFAULT '',
+	sharedsecret VARCHAR DEFAULT '',
+	onlinestatus BOOLEAN NOT NULL DEFAULT TRUE,
+	games VARCHAR[] DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE license_code (
+  id SERIAL PRIMARY KEY,
+	code VARCHAR(255) NOT NULL UNIQUE,
+	type CHAR(4) REFERENCES license_type(type_id) ON UPDATE CASCADE,
+	used_by INT	REFERENCES discord_accounts(id) ON UPDATE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO license_type (type_id, description)
+VALUES
+('L001', 'Free'),
+('L002', 'Premium');
+
+INSERT INTO license_code (code, type)
+VALUES
+('22FA-SKG3-YRAC-YW8T', 'L001'),
+('BJWS-CKGJ-6UY2-CL82', 'L001'),
+('PQJP-DMQC-DLXG-KQHT', 'L001'),
+('GQ8Z-CYYL-9YQP-MYBG', 'L002'),
+('8KPX-AB5P-6H6Y-NMJ5', 'L002'),
+('HKUT-WLLE-QD9W-QCVR', 'L002');
+
