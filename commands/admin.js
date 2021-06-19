@@ -3,6 +3,7 @@ const { knex, db } = require('../helpers/database');
 const verifyArgs = require('../helpers/verify-arguments');
 const log = require('../helpers/logger');
 const env = require('../helpers/load-env');
+const { steamBots, steamAccounts } = require('../steamClient');
 
 // const sendAdminMessage = (client, msg) => {
 //   // Send message to admin channel
