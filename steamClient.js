@@ -145,8 +145,8 @@ steamBots.new = (account) => {
     }
   });
 
-  client.on('loginKey', function (key) {
-    this.loginKey = setLoginKey(this.username, this.id, key);
+  client.on('loginKey', async function (key) {
+    this.loginKey = await setLoginKey(this.username, this.id, key);
   });
 
   client.on('playingState', function (blocked, playingApp) {
@@ -179,7 +179,7 @@ steamBots.new = (account) => {
         replyDiscord(`${log('steam')} ${this.username} | ERROR: Invalid ${this.loginKey ? "login key" : "password"}`);
 
         if (this.loginKey) {
-          this.loginKey = setLoginKey(this.username, this.id, "");
+          this.loginKey = await setLoginKey(this.username, this.id, "");
 
           replyDiscord(`${log('steam')} ${this.username} | INFO: Logged out - Reconnecting in 5 seconds...`);
           setTimeout(() => {
@@ -187,7 +187,7 @@ steamBots.new = (account) => {
             client.doLogin();
           }, 5 * 1000);
         } else {
-          client.logOff();
+          this.logOff();
           replyDiscord(`${log('steam')} ${this.username} | WARNING: Please check your password as soon as possible!`);
         }
 
