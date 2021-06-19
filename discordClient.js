@@ -35,7 +35,7 @@ const commands = {
 
 discordBot.start = () => {
   client.on('ready', () => {
-    client.user.setActivity(`${prefix}help`, {
+    client.user.setActivity(`DM me ${prefix}help`, {
       type: 'PLAYING'
     });
 
@@ -54,10 +54,12 @@ discordBot.start = () => {
 
     if (!client.commands.has(command)) return;
 
+    const channelName = (message.channel.name) ? `#${message.channel.name}` : 'DM';
+
     if (command === commands.account) {
-      console.log(`${log('discord')} LOG | ${message.author.tag} send ${commands.account} (#${message.channel.name})`);
+      console.log(`${log('discord')} LOG | ${message.author.tag} send ${commands.account} (${channelName})`);
     } else {
-      console.log(`${log('discord')} LOG | ${message.author.tag} send ${message.content} (#${message.channel.name})`);
+      console.log(`${log('discord')} LOG | ${message.author.tag} send ${message.content} (${channelName})`);
     }
 
     try {

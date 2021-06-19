@@ -10,7 +10,7 @@ module.exports = {
     if (!user.length) return;
 
     if (!verifyArgs(args, 'manage')) {
-      message.reply(
+      message.author.send(
         "\n**Steam-HourBoost | Manage**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -31,7 +31,7 @@ module.exports = {
       const steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username: args[1] });
 
       if (!steamAccount.length) {
-        message.reply("Username does not exist!");
+        message.author.send("Username does not exist!");
         return;
       }
 
@@ -49,7 +49,7 @@ module.exports = {
           // Update games to database
           await knex(db.table.steam).where({ owner_id: user[0].id, username: args[1] }).update({ games });
 
-          message.reply(`${games.length} games added!`);
+          message.author.send(`${games.length} games added!`);
           break;
         case 'onlinestatus':
           let status = args[2].toLowerCase();
@@ -61,12 +61,12 @@ module.exports = {
           // Update online status
           await knex(db.table.steam).where({ owner_id: user[0].id, username: args[1] }).update({ onlinestatus: onlineStatus });
 
-          message.reply(`Online status changed to ${onlineStatus}!`);
+          message.author.send(`Online status changed to ${onlineStatus}!`);
           break;
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.reply("Oops! Something went wrong.");
+      message.author.send("Oops! Something went wrong.");
       return;
     }
   }

@@ -22,14 +22,14 @@ module.exports = {
       });
 
       if (!steamAccounts.length) {
-        message.reply("No accounts found!");
+        message.author.send("No accounts found!");
         return;
       }
 
-      message.reply(msg);
+      message.author.send(msg);
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.reply("Oops! Something went wrong.");
+      message.author.send("Oops! Something went wrong.");
       return;
     }
   }

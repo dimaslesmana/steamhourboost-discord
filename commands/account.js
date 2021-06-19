@@ -12,7 +12,7 @@ module.exports = {
     if (!user.length) return;
 
     if (!verifyArgs(args, 'account')) {
-      message.reply(
+      message.author.send(
         "\n**Steam-HourBoost | Steam Account**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -55,7 +55,7 @@ module.exports = {
           const accounts = await knex(db.table.steam).where({ owner_id: user[0].id });
           if (accounts.length) {
             if (user[0].account_type === 'L001' && accounts.length >= 1) {
-              message.reply("Only 1 account is allowed for free user!");
+              message.author.send("Only 1 account is allowed for free user!");
               return;
             }
           }
@@ -63,7 +63,7 @@ module.exports = {
           // Check if username already exist
           const account = await knex(db.table.steam).where({ username });
           if (account.length) {
-            message.reply("Account already exist!");
+            message.author.send("Account already exist!");
             return;
           }
 
@@ -75,7 +75,7 @@ module.exports = {
             sharedsecret: sharedSecret
           });
 
-          message.reply("Steam account added!");
+          message.author.send("Steam account added!");
           break;
         case 'edit':
           // Edit Steam account
@@ -84,7 +84,7 @@ module.exports = {
           steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
           if (!steamAccount.length) {
-            message.reply("Account does not exist!");
+            message.author.send("Account does not exist!");
             return;
           }
 
@@ -103,11 +103,11 @@ module.exports = {
             steamAccounts[index].steamClient.doLogOff();
             // Remove Steam account from array
             steamAccounts.splice(index, 1);
-            message.reply("Steam account details edited!\nBoosting for this account has been stopped! Please restart boosting!");
+            message.author.send("Steam account details edited!\nBoosting for this account has been stopped! Please restart boosting!");
             return;
           }
 
-          message.reply("Steam account details edited!");
+          message.author.send("Steam account details edited!");
           break;
         case 'remove':
           // Remove Steam account
@@ -116,7 +116,7 @@ module.exports = {
           steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
           if (!steamAccount.length) {
-            message.reply("Account does not exist!");
+            message.author.send("Account does not exist!");
             return;
           }
 
@@ -130,16 +130,16 @@ module.exports = {
             steamAccounts[index].steamClient.doLogOff();
             // Remove Steam account from array
             steamAccounts.splice(index, 1);
-            message.reply("Steam account removed!\nBoosting for this account has been stopped!");
+            message.author.send("Steam account removed!\nBoosting for this account has been stopped!");
             return;
           }
 
-          message.reply("Steam account removed!");
+          message.author.send("Steam account removed!");
           break;
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.reply("Oops! Something went wrong.");
+      message.author.send("Oops! Something went wrong.");
       return;
     }
   }

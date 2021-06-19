@@ -27,7 +27,7 @@ steamBots.new = (account) => {
   client.games = account.games;
   client.steamGuardAuth = null;
 
-  const replyDiscord = (msg) => {
+  const replyDiscord = msg => {
     const steamAccount = steamAccounts.find(acc => acc.steamClient.id === client.id);
     if (steamAccount == null) {
       return;
@@ -38,15 +38,13 @@ steamBots.new = (account) => {
       return;
     }
 
-    steamAccount.discordClient.message.reply(`\n${msg}`);
+    steamAccount.discordClient.message.author.send(msg);
   };
 
   const updateSteamGuardAuth = (value = null) => {
     const steamAccount = steamAccounts.find(acc => acc.steamClient.id === client.id);
 
-    if (steamAccount == null) {
-      return;
-    }
+    if (steamAccount == null) return;
 
     // Set steamGuardAuth to null
     if (value == null) {
@@ -82,6 +80,7 @@ steamBots.new = (account) => {
       }
     } catch (err) {
       console.log(`${log('steam')} ${this.username} | ERROR: OnLogOn: ${err}`);
+      replyDiscord(`${log('steam')} ${this.username} | ERROR: OnLogOn!\nRetrying in 40 minutes...`);
       setTimeout(() => {
         client.doLogin();
       }, 40 * 60 * 1000);
@@ -89,17 +88,15 @@ steamBots.new = (account) => {
   }
 
   client.doLogOff = async function () {
-    this.logOff();
-
     try {
       // Update is_runnning status in database
       await knex(db.table.steam).where({ id: this.id, owner_id: this.ownerId }).update({ is_running: false });
+      this.logOff();
+      replyDiscord(`${log('steam')} ${this.username} | INFO: Account logged out!`);
     } catch (err) {
       console.log(`${log('steam')} ${this.username} | ERROR: ${err}`);
       return;
     }
-
-    replyDiscord(`${log('steam')} ${this.username} | INFO: Account logged out!`);
   }
 
   client.on('loggedOn', async function (details) {
@@ -108,20 +105,21 @@ steamBots.new = (account) => {
         try {
           // Update is_runnning status in database
           await knex(db.table.steam).where({ id: this.id, owner_id: this.ownerId }).update({ is_running: true });
+          // Reset steam guard callback to null
+          updateSteamGuardAuth();
+
+          // Steam online status
+          client.setPersona(this.onlineStatus ? SteamUser.EPersonaState.Online : SteamUser.EPersonaState.Invisible);
+          replyDiscord(`${log('steam')} ${this.username} | Successfully logged on as ${client.steamID.getSteamID64()}`);
+
+          // Start games
+          client.gamesPlayed(shuffleArray(this.games));
+
+          replyDiscord(`${log('steam')} ${this.username} | Started playing ${JSON.stringify(this.games)}`);
         } catch (err) {
           console.log(`${log('steam')} ${this.username} | ERROR: ${err}`);
           return;
         }
-        updateSteamGuardAuth();
-
-        replyDiscord(`${log('steam')} ${this.username} | Successfully logged on as ${client.steamID.getSteamID64()}`);
-        // Steam online status
-        client.setPersona(this.onlineStatus ? SteamUser.EPersonaState.Online : SteamUser.EPersonaState.Invisible);
-
-        // Start games
-        client.gamesPlayed(shuffleArray(this.games));
-
-        replyDiscord(`${log('steam')} ${this.username} | Started playing ${JSON.stringify(this.games)}`);
         break;
       default:
         replyDiscord(`${log('steam')} ${this.username} | eresult: ${details.eresult}`);
@@ -135,13 +133,15 @@ steamBots.new = (account) => {
       replyDiscord(`${log('steam')} ${this.username} | Generated Auth Code: ${authCode}`);
       callback(authCode);
     } else {
+      // Reset steam guard callback to null
       updateSteamGuardAuth();
 
       const steamGuardType = domain ? `Email (${domain})` : `App`;
       const message = `Steam Guard ${steamGuardType} Code`;
-      replyDiscord(`${log('steam')} ${this.username} | ${message} required!\nEnter 2FA code using **!2fa \`username\` \`code\`**`);
-
+      // Set steam guard callback
       updateSteamGuardAuth({ message, callback });
+
+      replyDiscord(`${log('steam')} ${this.username} | ${message} required!\nEnter 2FA code using **!2fa \`username\` \`code\`**`);
     }
   });
 
@@ -158,7 +158,7 @@ steamBots.new = (account) => {
   client.on('vacBans', function (numBans, appids) {
     if (numBans > 0) {
       const appList = `In apps: [${appids.join(`, `)}]`;
-      replyDiscord(`${log('steam')} ${this.username} | ${numBans} VAC ban${numBans > 1 ? 's' : ''} - ${appids.length > 0 ? appList : ''}`);
+      replyDiscord(`${log('steam')} ${this.username} | ${numBans} VAC ${numBans > 1 ? 'bans' : 'ban'} - ${appids.length > 0 ? appList : ''}`);
     }
   });
 
@@ -170,6 +170,8 @@ steamBots.new = (account) => {
       console.log(`${log('steam')} ${this.username} | ERROR: ${err}`);
       return;
     }
+
+    // Reset steam guard callback to null
     updateSteamGuardAuth();
 
     switch (details.eresult) {
@@ -191,10 +193,10 @@ steamBots.new = (account) => {
 
         return;
       case SteamUser.EResult.LoggedInElsewhere:
-        replyDiscord(`${log('steam')} ${this.username} | ERROR: Logged in elsewhere`);
+        replyDiscord(`${log('steam')} ${this.username} | ERROR: Logged in elsewhere!`);
         break;
       case SteamUser.EResult.AccountLogonDenied:
-        replyDiscord(`${log('steam')} ${this.username} | ERROR: Steam Guard required`);
+        replyDiscord(`${log('steam')} ${this.username} | ERROR: Steam Guard required!`);
         break;
       default:
         replyDiscord(`${log('steam')} ${this.username} | ERROR: ${error}`);

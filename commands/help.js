@@ -2,9 +2,8 @@ module.exports = {
   name: 'help',
   description: 'Help command!',
   execute(client, prefix, commands, message, args, user = []) {
-    // return if user is not found
     if (!user.length) {
-      message.reply(
+      message.author.send(
         "\n**Steam-HourBoost**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -13,7 +12,7 @@ module.exports = {
         "\n" + "---------------------------------"
       );
     } else {
-      message.reply(
+      message.author.send(
         "\n**Steam-HourBoost**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +

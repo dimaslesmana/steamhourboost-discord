@@ -20,7 +20,7 @@ module.exports = {
       if (!steamAccount.length) return;
 
       if (steamAccount[0].is_running) {
-        message.reply("Steam account already running!");
+        message.author.send("Steam account already running!");
         return;
       }
 
@@ -38,7 +38,7 @@ module.exports = {
       });
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.reply("Oops! Something went wrong.");
+      message.author.send("Oops! Something went wrong.");
       return;
     }
   }

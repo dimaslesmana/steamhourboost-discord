@@ -20,7 +20,7 @@ module.exports = {
       if (!steamAccount.length) return;
 
       if (!steamAccount[0].is_running) {
-        message.reply("Steam acccount already stopped!");
+        message.author.send("Steam acccount already stopped!");
         return;
       }
 
@@ -31,7 +31,7 @@ module.exports = {
       if (index <= -1) {
         // Update is_runnning status in database
         await knex(db.table.steam).where({ owner_id: user[0].id, username: args[0] }).update({ is_running: false });
-        message.reply("Steam account stopped!");
+        message.author.send("Steam account stopped!");
         return;
       }
 
@@ -39,10 +39,10 @@ module.exports = {
       // Remove Steam account from array
       steamAccounts.splice(index, 1);
 
-      message.reply("Steam acccount stopped!");
+      message.author.send("Steam acccount stopped!");
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.reply("Oops! Something went wrong.");
+      message.author.send("Oops! Something went wrong.");
       return;
     }
   }

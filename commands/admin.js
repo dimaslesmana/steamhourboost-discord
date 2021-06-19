@@ -4,10 +4,10 @@ const verifyArgs = require('../helpers/verify-arguments');
 const log = require('../helpers/logger');
 const env = require('../helpers/load-env');
 
-const sendAdminMessage = (client, msg) => {
-  // Send message to admin channel
-  client.channels.cache.get(env.DISCORD_ADMIN_CHANNEL()).send(msg);
-};
+// const sendAdminMessage = (client, msg) => {
+//   // Send message to admin channel
+//   client.channels.cache.get(env.DISCORD_ADMIN_CHANNEL()).send(msg);
+// };
 
 module.exports = {
   name: 'admin',
@@ -17,7 +17,7 @@ module.exports = {
     if (message.author.id !== env.DISCORD_ADMIN_ID()) return;
 
     if (!verifyArgs(args, 'admin')) {
-      message.reply(
+      message.author.send(
         "\n**Steam-HourBoost | Admin Commands**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -68,18 +68,19 @@ module.exports = {
           });
         }
 
-        licenses.forEach(license => msg += `License code: \`${license.code}\` \*(${licenseType})\*\n`);
+        licenses.forEach(license => msg += `License Code: \`${license.code}\` \*(${licenseType})\*\n`);
 
         // Insert licenses to database
         await knex.batchInsert(db.table.license_code, licenses, amount);
 
-        sendAdminMessage(client, msg);
+        // sendAdminMessage(client, msg);
+        message.author.send(msg);
       } else if (adminCommand === 'restart-boost') {
         // Get Steam accounts from db where running status is true
         const accounts = await knex(db.table.steam).where({ is_running: true });
 
         if (!accounts.length) {
-          message.reply("No account found!");
+          message.author.send("No account found!");
           return;
         }
 
@@ -107,11 +108,11 @@ module.exports = {
           }
         });
 
-        message.reply(`SUCCESS`);
+        message.author.send(`SUCCESS`);
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.reply("Oops! Something went wrong.");
+      message.author.send("Oops! Something went wrong.");
       return;
     }
   }

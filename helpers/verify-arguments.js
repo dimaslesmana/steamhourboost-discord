@@ -30,11 +30,16 @@ module.exports = (args, type) => {
     case 'license':
       // return if no arguments provided
       if (!args.length) return false;
+      /**
+       * user requesting license info command
+       * doesn't need to check furthermore
+       */
+      if (args[0] === "info") return true;
       if (!args[1]) return false;
       // too many arguments
       if (args.length > 2) return false;
 
-      // return if arguments is not number
+      // return if arguments does not match license format
       if (!args[1].match(/^(([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{4}))+$/g)) return false;
 
       return true;

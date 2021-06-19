@@ -1,5 +1,6 @@
 const { steamAccounts } = require('../steamClient');
 const verifyArgs = require('../helpers/verify-arguments');
+const log = require('../helpers/logger');
 
 module.exports = {
   name: '2fa',
@@ -18,6 +19,9 @@ module.exports = {
       return;
     }
 
+    const steamUsername = steamAccount.steamClient.username;
+
+    message.author.send(`${log('discord')} ${steamUsername} | Trying \`${steamGuardCode}\` - Please wait...`);
     steamAccount.steamClient.steamGuardAuth.callback(steamGuardCode);
   }
 };
