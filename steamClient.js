@@ -174,7 +174,7 @@ steamBots.new = (account) => {
     // Reset steam guard callback to null
     updateSteamGuardAuth();
 
-    switch (details.eresult) {
+    switch (error.eresult) {
       case SteamUser.EResult.InvalidPassword:
         replyDiscord(`${log('steam')} ${this.username} | ERROR: Invalid ${this.loginKey ? "login key" : "password"}`);
 
