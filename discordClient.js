@@ -49,12 +49,14 @@ discordBot.start = () => {
     // return if message doesn't start with prefix || author is a bot account || author is the bot itself
     if (!message.content.startsWith(prefix) || message.author.bot || message.author.equals(client.user)) return;
 
-    console.log(`${log('discord')} LOG | ${message.author.tag} send ${message.content} (#${message.channel.name})`);
-
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
     if (!client.commands.has(command)) return;
+
+    if (command !== commands.account) {
+      console.log(`${log('discord')} LOG | ${message.author.tag} send ${message.content} (#${message.channel.name})`);
+    }
 
     try {
       const user = await knex(db.table.discord).where({ discord_id: message.author.id });
