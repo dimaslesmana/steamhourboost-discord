@@ -54,7 +54,9 @@ discordBot.start = () => {
 
     if (!client.commands.has(command)) return;
 
-    if (command !== commands.account) {
+    if (command === commands.account) {
+      console.log(`${log('discord')} LOG | ${message.author.tag} send ${commands.account} (#${message.channel.name})`);
+    } else {
       console.log(`${log('discord')} LOG | ${message.author.tag} send ${message.content} (#${message.channel.name})`);
     }
 
