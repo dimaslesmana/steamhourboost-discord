@@ -5,11 +5,6 @@ const log = require('../helpers/logger');
 const env = require('../helpers/load-env');
 const { steamBots, steamAccounts } = require('../steamClient');
 
-// const sendAdminMessage = (client, msg) => {
-//   // Send message to admin channel
-//   client.channels.cache.get(env.DISCORD_ADMIN_CHANNEL()).send(msg);
-// };
-
 module.exports = {
   name: 'admin',
   description: 'Admin only commands.',
@@ -18,12 +13,12 @@ module.exports = {
     if (message.author.id !== env.DISCORD_ADMIN_ID()) return;
 
     if (!verifyArgs(args, 'admin')) {
-      message.author.send(
+      client.users.cache.get(message.author.id).send(
         "\n**Steam-HourBoost | Admin Commands**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
         "\n" + `**${prefix}${commands.admin} gen-license \`(free/premium)\` \`amount\`:** Generate new license.` +
-        "\n" + `**${prefix}${commands.admin} restart-boost:** Restart steam account that has running status on db set to true.` +
+        "\n" + `**${prefix}${commands.admin} restart-boost:** Restart steam account that has running status on db set to true. \*(Only use this after the bot exited or crashes)\*` +
         "\n" + "---------------------------------"
       );
       return;
@@ -74,19 +69,23 @@ module.exports = {
         // Insert licenses to database
         await knex.batchInsert(db.table.license_code, licenses, amount);
 
-        // sendAdminMessage(client, msg);
-        message.author.send(`${log('discord')}\n${msg}`);
+        client.users.cache.get(message.author.id).send(`${log('discord')}\n${msg}`);
       } else if (adminCommand === 'restart-boost') {
+        if (steamAccounts.length) {
+          client.users.cache.get(message.author.id).send(`${log('discord')} Cannot continue, some steam account is still running!`);
+          return;
+        }
+
         // Get Steam accounts from db where running status is true
         const accounts = await knex(db.table.steam).where({ is_running: true });
 
         if (!accounts.length) {
-          message.author.send(`${log('discord')} No account found!`);
+          client.users.cache.get(message.author.id).send(`${log('discord')} No account found!`);
           return;
         }
 
         const totalAccountMsg = `${accounts.length} ${(accounts.length > 1) ? 'accounts' : 'account'}`;
-        message.author.send(`${log('discord')} Found ${totalAccountMsg} - Restarting ${totalAccountMsg}...`);
+        client.users.cache.get(message.author.id).send(`${log('discord')} Found ${totalAccountMsg} - Restarting ${totalAccountMsg}...`);
 
         // Parse games array from string to integer
         accounts.forEach(account => {
@@ -99,15 +98,12 @@ module.exports = {
 
           if (!isExists) {
             setTimeout(() => {
-              const client = steamBots.new(account);
-              message.author.send(`${log('discord')} ${account.username} | Sending login request into Steam - Please wait...`);
-              client.doLogin();
+              const steamClient = steamBots.new(account);
+              steamClient.doLogin();
 
               steamAccounts.push({
-                steamClient: client,
-                discordClient: {
-                  message: message
-                }
+                steamClient,
+                discordClient: client
               });
             }, 2000);
           }
@@ -115,7 +111,7 @@ module.exports = {
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(message.author.id).send("Oops! Something went wrong.");
       return;
     }
   }

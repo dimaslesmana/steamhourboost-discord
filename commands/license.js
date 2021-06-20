@@ -10,7 +10,7 @@ module.exports = {
   description: 'See more about this command.',
   async execute(client, prefix, commands, message, args, user = []) {
     if (!verifyArgs(args, 'license')) {
-      message.author.send(
+      client.users.cache.get(message.author.id).send(
         "\n**Steam-HourBoost | License**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -32,7 +32,7 @@ module.exports = {
         const licenseCode = await knex(db.table.license_code).where({ used_by: user[0].id });
         const licenseType = await knex(db.table.license_type).where({ type_id: licenseCode[0].type });
 
-        message.author.send(`${log('discord')}\nLicense Code: \`${licenseCode[0].code}\`\nLicense Type: ${licenseType[0].description}`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')}\nLicense Code: \`${licenseCode[0].code}\`\nLicense Type: ${licenseType[0].description}`);
         return;
       }
 
@@ -42,7 +42,7 @@ module.exports = {
       const licenseCode = await knex(db.table.license_code).where({ code, used_by: null });
 
       if (!licenseCode.length) {
-        message.author.send(`${log('discord')} License code \`${code}\` invalid!`);
+        client.users.cache.get(message.author.id).send(`${log('discord')} License code \`${code}\` invalid!`);
         return;
       }
 
@@ -53,8 +53,8 @@ module.exports = {
         // Check if user already exist
         // if so, then don't allow them to use this command
         if (user.length) {
-          // message.author.send("Only one license per account is allowed!");
-          message.author.send(`${log('discord')} License code \`${code}\` invalid!`);
+          // client.users.cache.get(message.author.id).send("Only one license per account is allowed!");
+          client.users.cache.get(message.author.id).send(`${log('discord')} License code \`${code}\` invalid!`);
           return;
         }
 
@@ -87,7 +87,7 @@ module.exports = {
         //   ]
         // });
 
-        message.author.send(`${log('discord')}\nLicense activation successful!\nLicense type: ${licenseType[0].description}`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')}\nLicense activation successful!\nLicense type: ${licenseType[0].description}`);
       } else if (licenseCommand === "change") {
         // Handle license key change
 
@@ -107,11 +107,11 @@ module.exports = {
         // const channel = message.guild.channels.cache.find(channel => channel.name === message.author.id && channel.type === 'text');
         // channel.setTopic(`License code: ${code} | (${licenseType[0].description})`);
 
-        message.author.send(`${log('discord')}\nLicense changed!\nLicense type: ${licenseType[0].description}`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')}\nLicense changed!\nLicense type: ${licenseType[0].description}`);
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(message.author.id).send("Oops! Something went wrong.");
       return;
     }
   }

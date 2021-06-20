@@ -21,7 +21,7 @@ CREATE TABLE steam_accounts (
 	owner_id INT NOT NULL REFERENCES discord_accounts(id) ON UPDATE CASCADE,
 	is_running BOOLEAN NOT NULL DEFAULT FALSE,
 	username VARCHAR NOT NULL UNIQUE,
-	password VARCHAR[] NOT NULL,
+	password VARCHAR NOT NULL,
 	loginkey VARCHAR DEFAULT '',
 	sharedsecret VARCHAR DEFAULT '',
 	onlinestatus BOOLEAN NOT NULL DEFAULT TRUE,

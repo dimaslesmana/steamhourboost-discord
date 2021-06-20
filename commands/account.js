@@ -12,7 +12,7 @@ module.exports = {
     if (!user.length) return;
 
     if (!verifyArgs(args, 'account')) {
-      message.author.send(
+      client.users.cache.get(user[0].discord_id).send(
         "\n**Steam-HourBoost | Steam Account**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -30,10 +30,7 @@ module.exports = {
       const accountCommand = args[0];
       const username = args[1].trim();
 
-      let password = {
-        iv: "",
-        content: ""
-      };
+      let password = "";
 
       if (args[2]) {
         password = encrypt(args[2]);
@@ -55,7 +52,7 @@ module.exports = {
           const accounts = await knex(db.table.steam).where({ owner_id: user[0].id });
           if (accounts.length) {
             if (user[0].account_type === 'L001' && accounts.length >= 1) {
-              message.author.send(`${log('discord')} Only 1 account is allowed for free user!`);
+              client.users.cache.get(user[0].discord_id).send(`${log('discord')} Only 1 account is allowed for free user!`);
               return;
             }
           }
@@ -63,19 +60,19 @@ module.exports = {
           // Check if username already exist
           const account = await knex(db.table.steam).where({ username });
           if (account.length) {
-            message.author.send(`${log('discord')} Steam account \`${account[0].username}\` already exist!`);
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} Steam account \`${account[0].username}\` already exist!`);
             return;
           }
 
           // Insert account to database
           await knex(db.table.steam).insert({
             owner_id: user[0].id,
-            username: username,
-            password: [password.iv, password.content],
+            username,
+            password,
             sharedsecret: sharedSecret
           });
 
-          message.author.send(`${log('discord')} Steam account \`${username}\` added!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} Steam account \`${username}\` added!`);
           break;
         case 'edit':
           // Edit Steam account
@@ -84,7 +81,7 @@ module.exports = {
           steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
           if (!steamAccount.length) {
-            message.author.send(`${log('discord')} Account \`${username}\` does not exist!`);
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} Account \`${username}\` does not exist!`);
             return;
           }
 
@@ -93,7 +90,7 @@ module.exports = {
           }
 
           // Update account
-          await knex(db.table.steam).where({ id: steamAccount[0].id, username }).update({ password: [password.iv, password.content], sharedsecret: sharedSecret });
+          await knex(db.table.steam).where({ id: steamAccount[0].id, username }).update({ password, sharedsecret: sharedSecret });
 
           // Get Steam account index from array
           index = steamAccounts.map(account => account.steamClient.id).indexOf(steamAccount[0].id);
@@ -101,11 +98,11 @@ module.exports = {
           // index found, user trying to edit account that is still running
           if (index >= 0) {
             steamAccounts[index].steamClient.doLogOff(index);
-            message.author.send(`${log('discord')} Steam account \`${username}\` details edited!\nBoosting for this account has been stopped! Please restart boosting!`);
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} Steam account \`${username}\` details edited!\nBoosting for this account has been stopped! Please restart boosting!`);
             return;
           }
 
-          message.author.send(`${log('discord')} Steam account \`${username}\` details edited!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} Steam account \`${username}\` details edited!`);
           break;
         case 'remove':
           // Remove Steam account
@@ -114,7 +111,7 @@ module.exports = {
           steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
           if (!steamAccount.length) {
-            message.author.send(`${log('discord')} Account \`${username}\` does not exist!`);
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} Account \`${username}\` does not exist!`);
             return;
           }
 
@@ -126,16 +123,16 @@ module.exports = {
           // index found, user trying to remove account that is still running
           if (index >= 0) {
             steamAccounts[index].steamClient.doLogOff(index);
-            message.author.send(`${log('discord')} Steam account \`${username}\` removed!\nBoosting for this account has been stopped!`);
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} Steam account \`${username}\` removed!\nBoosting for this account has been stopped!`);
             return;
           }
 
-          message.author.send(`${log('discord')} Steam account \`${username}\` removed!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} Steam account \`${username}\` removed!`);
           break;
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(user[0].discord_id).send("Oops! Something went wrong.");
       return;
     }
   }

@@ -28,27 +28,23 @@ module.exports = {
         const index = steamAccounts.map(account => account.steamClient.id).indexOf(steamAccount[0].id);
 
         if (index >= 0) {
-          message.author.send(`${log('discord')} ${username} | Sending logout request into Steam - Please wait...`);
           steamAccounts[index].steamClient.doLogOff(index);
         } else {
           // index not found
           await knex(db.table.steam).where({ owner_id: user[0].id, username }).update({ is_running: false });
-          message.author.send(`${log('discord')} ${username} | Account stopped!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | Account stopped!`);
         }
 
         // Login
         // Parse games array from string to integer
         steamAccount[0].games = steamAccount[0].games.map(game => parseInt(game));
 
-        const client = steamBots.new(steamAccount[0]);
-        message.author.send(`${log('discord')} ${username} | Sending login request into Steam - Please wait...`);
-        client.doLogin();
+        const steamClient = steamBots.new(steamAccount[0]);
+        steamClient.doLogin();
 
         steamAccounts.push({
-          steamClient: client,
-          discordClient: {
-            message: message
-          }
+          steamClient,
+          discordClient: client
         });
         return;
       }
@@ -58,12 +54,12 @@ module.exports = {
       const accounts = await knex(db.table.steam).where({ owner_id: user[0].id, is_running: true });
 
       if (!accounts.length) {
-        message.author.send(`${log('discord')} No running account found!`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} No running account found!`);
         return;
       }
 
       const totalAccountMsg = `${accounts.length} running ${(accounts.length > 1) ? 'accounts' : 'account'}`;
-      message.author.send(`${log('discord')} Found ${totalAccountMsg} - Restarting ${totalAccountMsg}...`);
+      client.users.cache.get(user[0].discord_id).send(`${log('discord')} Found ${totalAccountMsg} - Restarting ${totalAccountMsg}...`);
 
       // Parse games array from string to integer
       accounts.forEach(account => {
@@ -76,33 +72,29 @@ module.exports = {
         const index = steamAccounts.map(acc => acc.steamClient.id).indexOf(account.id);
 
         if (index >= 0) {
-          message.author.send(`${log('discord')} ${account.username} | Sending logout request into Steam - Please wait...`);
           steamAccounts[index].steamClient.doLogOff(index);
         } else {
           // index not found
           await knex(db.table.steam).where({ owner_id: user[0].id, username: account.username }).update({ is_running: false });
-          message.author.send(`${log('discord')} ${account.username} | Account stopped!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${account.username} | Account stopped!`);
         }
       });
 
       // Login all accounts
       accounts.forEach(account => {
         setTimeout(() => {
-          const client = steamBots.new(account);
-          message.author.send(`${log('discord')} ${account.username} | Sending login request into Steam - Please wait...`);
-          client.doLogin();
+          const steamClient = steamBots.new(account);
+          steamClient.doLogin();
 
           steamAccounts.push({
-            steamClient: client,
-            discordClient: {
-              message: message
-            }
+            steamClient,
+            discordClient: client
           });
         }, 5 * 1000);
       });
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(user[0].discord_id).send("Oops! Something went wrong.");
       return;
     }
   }

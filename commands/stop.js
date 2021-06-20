@@ -20,7 +20,7 @@ module.exports = {
       if (!steamAccount.length) return;
 
       if (!steamAccount[0].is_running) {
-        message.author.send(`${log('discord')} ${steamAccount[0].username} | Account already stopped!`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamAccount[0].username} | Account already stopped!`);
         return;
       }
 
@@ -31,15 +31,14 @@ module.exports = {
       if (index <= -1) {
         // Update is_runnning status in database
         await knex(db.table.steam).where({ owner_id: user[0].id, username: args[0] }).update({ is_running: false });
-        message.author.send(`${log('discord')} ${steamAccount[0].username} | Account stopped!`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamAccount[0].username} | Account stopped!`);
         return;
       }
 
-      message.author.send(`${log('discord')} ${steamAccount[0].username} | Sending logout request into Steam - Please wait...`);
       steamAccounts[index].steamClient.doLogOff(index);
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(user[0].discord_id).send("Oops! Something went wrong.");
       return;
     }
   }

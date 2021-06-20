@@ -23,14 +23,14 @@ module.exports = {
       });
 
       if (!steamAccounts.length) {
-        message.author.send(`${log('discord')} No accounts found!`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} No accounts found!`);
         return;
       }
 
-      message.author.send(`${log('discord')}\n${msg}`);
+      client.users.cache.get(user[0].discord_id).send(`${log('discord')}\n${msg}`);
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(user[0].discord_id).send("Oops! Something went wrong.");
       return;
     }
   }

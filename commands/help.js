@@ -3,7 +3,7 @@ module.exports = {
   description: 'Help command!',
   execute(client, prefix, commands, message, args, user = []) {
     if (!user.length) {
-      message.author.send(
+      client.users.cache.get(message.author.id).send(
         "\n**Steam-HourBoost**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -12,7 +12,7 @@ module.exports = {
         "\n" + "---------------------------------"
       );
     } else {
-      message.author.send(
+      client.users.cache.get(user[0].discord_id).send(
         "\n**Steam-HourBoost**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +

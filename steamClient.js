@@ -27,7 +27,7 @@ steamBots.new = (account) => {
   client.games = account.games;
   client.steamGuardAuth = null;
 
-  const replyDiscord = msg => {
+  const replyDiscord = async msg => {
     const steamAccount = steamAccounts.find(acc => acc.steamClient.id === client.id);
     if (steamAccount == null) {
       return;
@@ -38,7 +38,17 @@ steamBots.new = (account) => {
       return;
     }
 
-    steamAccount.discordClient.message.author.send(msg);
+    try {
+      // Get owner's discord id
+      const user = await knex(db.table.discord).where({ id: client.ownerId });
+
+      // no account found
+      if (!user.length) return;
+
+      steamAccount.discordClient.users.cache.get(user[0].discord_id).send(msg);
+    } catch (err) {
+      console.log(`${log('discord')} ${client.username} | ERROR: OnDiscordReplyMessage: ${err}`);
+    }
   };
 
   const updateSteamGuardAuth = (value = null) => {
@@ -61,6 +71,7 @@ steamBots.new = (account) => {
   client.doLogin = function () {
     try {
       if (this.loginKey && !this.sharedSecret) {
+        replyDiscord(`${log('steam')} ${this.username} | Trying to login using login key - Please wait...`);
         this.logOn({
           accountName: this.username,
           loginKey: this.loginKey,
@@ -68,19 +79,21 @@ steamBots.new = (account) => {
           rememberPassword: true
         });
       } else {
+        replyDiscord(`${log('steam')} ${this.username} | Trying to login using password - Please wait...`);
+
         // Decrypt steam password
-        const decrpytedPassword = decrypt({ iv: this.password[0], content: this.password[1] });
+        const password = decrypt(this.password);
 
         this.logOn({
           accountName: this.username,
-          password: decrpytedPassword,
+          password: password,
           machineName: "Steam-Hourboost",
           rememberPassword: true
         });
       }
     } catch (err) {
       console.log(`${log('steam')} ${this.username} | ERROR: OnLogOn: ${err}`);
-      replyDiscord(`${log('steam')} ${this.username} | ERROR: OnLogOn!\nRetrying in 40 minutes...`);
+      replyDiscord(`${log('steam')} ${this.username} | ERROR: OnLogOn! - Retrying in 40 minutes...`);
       setTimeout(() => {
         client.doLogin();
       }, 40 * 60 * 1000);
@@ -89,6 +102,7 @@ steamBots.new = (account) => {
 
   client.doLogOff = async function (index) {
     try {
+      replyDiscord(`${log('steam')} ${this.username} | Trying to log out - Please wait...`);
       // Update is_runnning status in database
       await knex(db.table.steam).where({ id: this.id, owner_id: this.ownerId }).update({ is_running: false });
       this.logOff();
@@ -201,6 +215,10 @@ steamBots.new = (account) => {
       case SteamUser.EResult.AccountLogonDenied:
         replyDiscord(`${log('steam')} ${this.username} | ERROR: Steam Guard required!`);
         break;
+      case SteamUser.EResult.AccountDeleted:
+        replyDiscord(`${log('steam')} ${this.username} | ERROR: Steam account has been deleted!`);
+        this.logOff();
+        return;
       default:
         replyDiscord(`${log('steam')} ${this.username} | ERROR: ${error}`);
         break;

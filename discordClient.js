@@ -35,7 +35,7 @@ const commands = {
   twoFactor: '2fa',
 };
 
-discordBot.start = () => {
+discordBot.new = () => {
   client.on('ready', () => {
     client.user.setActivity(`DM me ${prefix}help`, {
       type: 'PLAYING'
@@ -78,7 +78,11 @@ discordBot.start = () => {
     console.log(`${log('discord')} ERROR: ${err.message}`);
   });
 
-  client.login(token);
+  client.doLogin = function () {
+    this.login(token);
+  };
+
+  return client;
 };
 
 module.exports = discordBot;

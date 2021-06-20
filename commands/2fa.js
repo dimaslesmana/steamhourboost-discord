@@ -21,7 +21,7 @@ module.exports = {
 
     const steamUsername = steamAccount.steamClient.username;
 
-    message.author.send(`${log('discord')} ${steamUsername} | Sending \`${steamGuardCode}\` auth code into Steam - Please wait...`);
+    client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamUsername} | Sending \`${steamGuardCode}\` auth code into Steam - Please wait...`);
     steamAccount.steamClient.steamGuardAuth.callback(steamGuardCode);
   }
 };

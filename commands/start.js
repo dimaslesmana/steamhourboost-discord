@@ -20,26 +20,23 @@ module.exports = {
       if (!steamAccount.length) return;
 
       if (steamAccount[0].is_running) {
-        message.author.send(`${log('discord')} ${steamAccount[0].username} | Account already running!`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamAccount[0].username} | Account already running!`);
         return;
       }
 
       // Parse games array from string to integer
       steamAccount[0].games = steamAccount[0].games.map(game => parseInt(game));
 
-      const client = steamBots.new(steamAccount[0]);
-      message.author.send(`${log('discord')} ${steamAccount[0].username} | Sending login request into Steam - Please wait...`);
-      client.doLogin();
+      const steamClient = steamBots.new(steamAccount[0]);
+      steamClient.doLogin();
 
       steamAccounts.push({
-        steamClient: client,
-        discordClient: {
-          message: message
-        }
+        steamClient,
+        discordClient: client
       });
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(user[0].discord_id).send("Oops! Something went wrong.");
       return;
     }
   }

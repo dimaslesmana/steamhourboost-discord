@@ -10,7 +10,7 @@ module.exports = {
     if (!user.length) return;
 
     if (!verifyArgs(args, 'manage')) {
-      message.author.send(
+      client.users.cache.get(user[0].discord_id).send(
         "\n**Steam-HourBoost | Manage**" +
         "\n" + "*Created by kezoura*" +
         "\n" + "---------------------------------" +
@@ -32,7 +32,7 @@ module.exports = {
       const steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
       if (!steamAccount.length) {
-        message.author.send(`${log('discord')} Username \`${username}\` does not exist!`);
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} Username \`${username}\` does not exist!`);
         return;
       }
 
@@ -50,7 +50,7 @@ module.exports = {
           // Update games to database
           await knex(db.table.steam).where({ owner_id: user[0].id, username }).update({ games });
 
-          message.author.send(`${log('discord')} ${username} | ${games.length} games added!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | ${games.length} games added!`);
           break;
         case 'onlinestatus':
           let status = args[2].toLowerCase();
@@ -62,12 +62,12 @@ module.exports = {
           // Update online status
           await knex(db.table.steam).where({ owner_id: user[0].id, username }).update({ onlinestatus: onlineStatus });
 
-          message.author.send(`${log('discord')} ${username} | Online status changed to \`${(onlineStatus) ? 'Online' : 'Invisible'}\`!`);
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | Online status changed to \`${(onlineStatus) ? 'Online' : 'Invisible'}\`!`);
           break;
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
-      message.author.send("Oops! Something went wrong.");
+      client.users.cache.get(user[0].discord_id).send("Oops! Something went wrong.");
       return;
     }
   }
