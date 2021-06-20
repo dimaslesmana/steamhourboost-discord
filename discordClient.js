@@ -30,7 +30,9 @@ const commands = {
   manage: 'manage',
   start: 'start',
   stop: 'stop',
+  restart: 'restart',
   admin: 'admin',
+  twoFactor: '2fa',
 };
 
 discordBot.start = () => {
@@ -55,9 +57,10 @@ discordBot.start = () => {
     if (!client.commands.has(command)) return;
 
     const channelName = (message.channel.name) ? `#${message.channel.name}` : 'DM';
+    const logExcludedCommand = [commands.account, commands.manage, commands.start, commands.stop, commands.restart, commands.twoFactor];
 
-    if (command === commands.account) {
-      console.log(`${log('discord')} LOG | ${message.author.tag} send ${commands.account} (${channelName})`);
+    if (logExcludedCommand.includes(command)) {
+      console.log(`${log('discord')} LOG | ${message.author.tag} used ${command} command (${channelName})`);
     } else {
       console.log(`${log('discord')} LOG | ${message.author.tag} send ${message.content} (${channelName})`);
     }

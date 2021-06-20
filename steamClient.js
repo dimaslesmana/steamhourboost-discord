@@ -87,12 +87,15 @@ steamBots.new = (account) => {
     }
   }
 
-  client.doLogOff = async function () {
+  client.doLogOff = async function (index) {
     try {
       // Update is_runnning status in database
       await knex(db.table.steam).where({ id: this.id, owner_id: this.ownerId }).update({ is_running: false });
       this.logOff();
-      replyDiscord(`${log('steam')} ${this.username} | INFO: Account logged out!`);
+      replyDiscord(`${log('steam')} ${this.username} | INFO: Account stopped & logged out!`);
+
+      // Remove Steam account from array
+      steamAccounts.splice(index, 1);
     } catch (err) {
       console.log(`${log('steam')} ${this.username} | ERROR: ${err}`);
       return;

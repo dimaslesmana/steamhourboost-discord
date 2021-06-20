@@ -11,22 +11,23 @@ module.exports = {
     let msg = "";
     let number = 1;
 
-    msg += "\n**Account List**";
+    msg += "**Account List**";
     msg += "\n---------------------------------\n";
 
     try {
       const steamAccounts = await knex(db.table.steam).where({ owner_id: user[0].id });
       steamAccounts.forEach(account => {
-        msg += `${number++}. **${account.username}** - Running: \`${account.is_running}\``;
+        const status = (account.is_running) ? 'Running' : 'Stopped';
+        msg += `${number++}. **${account.username}** - Status: \`${status}\``;
         msg += "\n";
       });
 
       if (!steamAccounts.length) {
-        message.author.send("No accounts found!");
+        message.author.send(`${log('discord')} No accounts found!`);
         return;
       }
 
-      message.author.send(msg);
+      message.author.send(`${log('discord')}\n${msg}`);
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
       message.author.send("Oops! Something went wrong.");

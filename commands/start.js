@@ -6,7 +6,7 @@ const { steamBots, steamAccounts } = require('../steamClient');
 
 module.exports = {
   name: 'start',
-  description: 'Start specified Steam account.',
+  description: 'Start Steam account.',
   async execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) return;
@@ -20,7 +20,7 @@ module.exports = {
       if (!steamAccount.length) return;
 
       if (steamAccount[0].is_running) {
-        message.author.send("Steam account already running!");
+        message.author.send(`${log('discord')} ${steamAccount[0].username} | Account already running!`);
         return;
       }
 
@@ -28,6 +28,7 @@ module.exports = {
       steamAccount[0].games = steamAccount[0].games.map(game => parseInt(game));
 
       const client = steamBots.new(steamAccount[0]);
+      message.author.send(`${log('discord')} ${steamAccount[0].username} | Sending login request into Steam - Please wait...`);
       client.doLogin();
 
       steamAccounts.push({

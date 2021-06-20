@@ -32,30 +32,29 @@ module.exports = {
         const licenseCode = await knex(db.table.license_code).where({ used_by: user[0].id });
         const licenseType = await knex(db.table.license_type).where({ type_id: licenseCode[0].type });
 
-        message.author.send(`License Code: \`${licenseCode[0].code}\`\nLicense Type: ${licenseType[0].description}`);
+        message.author.send(`${log('discord')}\nLicense Code: \`${licenseCode[0].code}\`\nLicense Type: ${licenseType[0].description}`);
         return;
       }
 
       const code = args[1];
 
       // Check if license code is found in database
-      let licenseCode = await knex(db.table.license_code).where({ code: code, used_by: null });
+      const licenseCode = await knex(db.table.license_code).where({ code, used_by: null });
 
       if (!licenseCode.length) {
-        message.author.send("License code invalid!");
+        message.author.send(`${log('discord')} License code \`${code}\` invalid!`);
         return;
       }
 
       // Get license type
-      let licenseType = await knex(db.table.license_type).where({ type_id: licenseCode[0].type });
-
+      const licenseType = await knex(db.table.license_type).where({ type_id: licenseCode[0].type });
 
       if (licenseCommand === "add") {
         // Check if user already exist
         // if so, then don't allow them to use this command
         if (user.length) {
           // message.author.send("Only one license per account is allowed!");
-          message.author.send("License code invalid!");
+          message.author.send(`${log('discord')} License code \`${code}\` invalid!`);
           return;
         }
 
@@ -67,7 +66,7 @@ module.exports = {
         user = await knex(db.table.discord).where({ discord_id: message.author.id });
 
         // Change license used_by status to new user id
-        await knex(db.table.license_code).where({ code: code }).update({ used_by: user[0].id });
+        await knex(db.table.license_code).where({ code }).update({ used_by: user[0].id });
 
         // // Create text channel based on license code
         // const everyoneRole = message.guild.roles.cache.find(r => r.name === "@everyone");
@@ -88,7 +87,7 @@ module.exports = {
         //   ]
         // });
 
-        message.author.send(`License activation successful!\nLicense type: ${licenseType[0].description}`);
+        message.author.send(`${log('discord')}\nLicense activation successful!\nLicense type: ${licenseType[0].description}`);
       } else if (licenseCommand === "change") {
         // Handle license key change
 
@@ -108,7 +107,7 @@ module.exports = {
         // const channel = message.guild.channels.cache.find(channel => channel.name === message.author.id && channel.type === 'text');
         // channel.setTopic(`License code: ${code} | (${licenseType[0].description})`);
 
-        message.author.send(`License changed!\nLicense type: ${licenseType[0].description}`);
+        message.author.send(`${log('discord')}\nLicense changed!\nLicense type: ${licenseType[0].description}`);
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);

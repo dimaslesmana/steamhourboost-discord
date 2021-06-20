@@ -28,7 +28,7 @@ module.exports = {
 
     try {
       const accountCommand = args[0];
-      let username = args[1].trim();
+      const username = args[1].trim();
 
       let password = {
         iv: "",
@@ -55,7 +55,7 @@ module.exports = {
           const accounts = await knex(db.table.steam).where({ owner_id: user[0].id });
           if (accounts.length) {
             if (user[0].account_type === 'L001' && accounts.length >= 1) {
-              message.author.send("Only 1 account is allowed for free user!");
+              message.author.send(`${log('discord')} Only 1 account is allowed for free user!`);
               return;
             }
           }
@@ -63,7 +63,7 @@ module.exports = {
           // Check if username already exist
           const account = await knex(db.table.steam).where({ username });
           if (account.length) {
-            message.author.send("Account already exist!");
+            message.author.send(`${log('discord')} Steam account \`${account[0].username}\` already exist!`);
             return;
           }
 
@@ -75,7 +75,7 @@ module.exports = {
             sharedsecret: sharedSecret
           });
 
-          message.author.send("Steam account added!");
+          message.author.send(`${log('discord')} Steam account \`${username}\` added!`);
           break;
         case 'edit':
           // Edit Steam account
@@ -84,7 +84,7 @@ module.exports = {
           steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
           if (!steamAccount.length) {
-            message.author.send("Account does not exist!");
+            message.author.send(`${log('discord')} Account \`${username}\` does not exist!`);
             return;
           }
 
@@ -100,14 +100,12 @@ module.exports = {
 
           // index found, user trying to edit account that is still running
           if (index >= 0) {
-            steamAccounts[index].steamClient.doLogOff();
-            // Remove Steam account from array
-            steamAccounts.splice(index, 1);
-            message.author.send("Steam account details edited!\nBoosting for this account has been stopped! Please restart boosting!");
+            steamAccounts[index].steamClient.doLogOff(index);
+            message.author.send(`${log('discord')} Steam account \`${username}\` details edited!\nBoosting for this account has been stopped! Please restart boosting!`);
             return;
           }
 
-          message.author.send("Steam account details edited!");
+          message.author.send(`${log('discord')} Steam account \`${username}\` details edited!`);
           break;
         case 'remove':
           // Remove Steam account
@@ -116,7 +114,7 @@ module.exports = {
           steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
           if (!steamAccount.length) {
-            message.author.send("Account does not exist!");
+            message.author.send(`${log('discord')} Account \`${username}\` does not exist!`);
             return;
           }
 
@@ -127,14 +125,12 @@ module.exports = {
 
           // index found, user trying to remove account that is still running
           if (index >= 0) {
-            steamAccounts[index].steamClient.doLogOff();
-            // Remove Steam account from array
-            steamAccounts.splice(index, 1);
-            message.author.send("Steam account removed!\nBoosting for this account has been stopped!");
+            steamAccounts[index].steamClient.doLogOff(index);
+            message.author.send(`${log('discord')} Steam account \`${username}\` removed!\nBoosting for this account has been stopped!`);
             return;
           }
 
-          message.author.send("Steam account removed!");
+          message.author.send(`${log('discord')} Steam account \`${username}\` removed!`);
           break;
       }
     } catch (err) {

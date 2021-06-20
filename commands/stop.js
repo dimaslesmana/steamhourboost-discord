@@ -6,7 +6,7 @@ const { steamBots, steamAccounts } = require('../steamClient');
 
 module.exports = {
   name: 'stop',
-  description: 'Stop specified Steam account.',
+  description: 'Stop Steam account.',
   async execute(client, prefix, commands, message, args, user = []) {
     // return if user is not found
     if (!user.length) return;
@@ -20,7 +20,7 @@ module.exports = {
       if (!steamAccount.length) return;
 
       if (!steamAccount[0].is_running) {
-        message.author.send("Steam acccount already stopped!");
+        message.author.send(`${log('discord')} ${steamAccount[0].username} | Account already stopped!`);
         return;
       }
 
@@ -31,15 +31,12 @@ module.exports = {
       if (index <= -1) {
         // Update is_runnning status in database
         await knex(db.table.steam).where({ owner_id: user[0].id, username: args[0] }).update({ is_running: false });
-        message.author.send("Steam account stopped!");
+        message.author.send(`${log('discord')} ${steamAccount[0].username} | Account stopped!`);
         return;
       }
 
-      steamAccounts[index].steamClient.doLogOff();
-      // Remove Steam account from array
-      steamAccounts.splice(index, 1);
-
-      message.author.send("Steam acccount stopped!");
+      message.author.send(`${log('discord')} ${steamAccount[0].username} | Sending logout request into Steam - Please wait...`);
+      steamAccounts[index].steamClient.doLogOff(index);
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);
       message.author.send("Oops! Something went wrong.");

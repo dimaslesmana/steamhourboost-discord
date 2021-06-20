@@ -26,12 +26,13 @@ module.exports = {
 
     try {
       const manageCommand = args[0];
+      const username = args[1];
 
       // Check if username exist
-      const steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username: args[1] });
+      const steamAccount = await knex(db.table.steam).where({ owner_id: user[0].id, username });
 
       if (!steamAccount.length) {
-        message.author.send("Username does not exist!");
+        message.author.send(`${log('discord')} Username \`${username}\` does not exist!`);
         return;
       }
 
@@ -47,9 +48,9 @@ module.exports = {
           }
 
           // Update games to database
-          await knex(db.table.steam).where({ owner_id: user[0].id, username: args[1] }).update({ games });
+          await knex(db.table.steam).where({ owner_id: user[0].id, username }).update({ games });
 
-          message.author.send(`${games.length} games added!`);
+          message.author.send(`${log('discord')} ${username} | ${games.length} games added!`);
           break;
         case 'onlinestatus':
           let status = args[2].toLowerCase();
@@ -59,9 +60,9 @@ module.exports = {
           const onlineStatus = (status === "true") ? true : false;
 
           // Update online status
-          await knex(db.table.steam).where({ owner_id: user[0].id, username: args[1] }).update({ onlinestatus: onlineStatus });
+          await knex(db.table.steam).where({ owner_id: user[0].id, username }).update({ onlinestatus: onlineStatus });
 
-          message.author.send(`Online status changed to ${onlineStatus}!`);
+          message.author.send(`${log('discord')} ${username} | Online status changed to \`${(onlineStatus) ? 'Online' : 'Invisible'}\`!`);
           break;
       }
     } catch (err) {

@@ -75,15 +75,18 @@ module.exports = {
         await knex.batchInsert(db.table.license_code, licenses, amount);
 
         // sendAdminMessage(client, msg);
-        message.author.send(msg);
+        message.author.send(`${log('discord')}\n${msg}`);
       } else if (adminCommand === 'restart-boost') {
         // Get Steam accounts from db where running status is true
         const accounts = await knex(db.table.steam).where({ is_running: true });
 
         if (!accounts.length) {
-          message.author.send("No account found!");
+          message.author.send(`${log('discord')} No account found!`);
           return;
         }
+
+        const totalAccountMsg = `${accounts.length} ${(accounts.length > 1) ? 'accounts' : 'account'}`;
+        message.author.send(`${log('discord')} Found ${totalAccountMsg} - Restarting ${totalAccountMsg}...`);
 
         // Parse games array from string to integer
         accounts.forEach(account => {
@@ -97,6 +100,7 @@ module.exports = {
           if (!isExists) {
             setTimeout(() => {
               const client = steamBots.new(account);
+              message.author.send(`${log('discord')} ${account.username} | Sending login request into Steam - Please wait...`);
               client.doLogin();
 
               steamAccounts.push({
@@ -105,11 +109,9 @@ module.exports = {
                   message: message
                 }
               });
-            }, 3 * 1000);
+            }, 2000);
           }
         });
-
-        message.author.send(`SUCCESS`);
       }
     } catch (err) {
       console.log(`${log('discord')} ERROR | ${err}`);

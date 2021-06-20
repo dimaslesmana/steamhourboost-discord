@@ -27,6 +27,16 @@ module.exports = (args, type) => {
       if (args.length > 1) return false;
 
       return true;
+    case 'restart':
+      /**
+       * user requesting to restart all account since no argument is provided
+       * doesn't need to check furthermore
+       */
+      if (!args.length) return true;
+      // too many arguments
+      if (args.length > 1) return false;
+
+      return true;
     case 'license':
       // return if no arguments provided
       if (!args.length) return false;
