@@ -44,12 +44,3 @@ VALUES
 ('L001', 'Free'),
 ('L002', 'Premium');
 
-INSERT INTO license_code (code, type)
-VALUES
-('22FA-SKG3-YRAC-YW8T', 'L001'),
-('BJWS-CKGJ-6UY2-CL82', 'L001'),
-('PQJP-DMQC-DLXG-KQHT', 'L001'),
-('GQ8Z-CYYL-9YQP-MYBG', 'L002'),
-('8KPX-AB5P-6H6Y-NMJ5', 'L002'),
-('HKUT-WLLE-QD9W-QCVR', 'L002');
-
