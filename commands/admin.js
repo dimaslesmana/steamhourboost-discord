@@ -97,6 +97,7 @@ module.exports = {
           const isExists = steamAccounts.find(acc => acc.steamClient.username === account.username);
 
           if (!isExists) {
+            client.users.cache.get(message.author.id).send(`${log('discord')} ${account.username} | Sending login request into Steam - Please wait...`);
             setTimeout(() => {
               const steamClient = steamBots.new(account);
               steamClient.doLogin();

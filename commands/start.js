@@ -27,6 +27,7 @@ module.exports = {
       // Parse games array from string to integer
       steamAccount[0].games = steamAccount[0].games.map(game => parseInt(game));
 
+      client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamAccount[0].username} | Sending login request into Steam - Please wait...`);
       const steamClient = steamBots.new(steamAccount[0]);
       steamClient.doLogin();
 

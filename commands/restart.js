@@ -28,6 +28,7 @@ module.exports = {
         const index = steamAccounts.map(account => account.steamClient.id).indexOf(steamAccount[0].id);
 
         if (index >= 0) {
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamAccount[0].username} | Sending logout request into Steam - Please wait...`);
           steamAccounts[index].steamClient.doLogOff(index);
         } else {
           // index not found
@@ -38,6 +39,8 @@ module.exports = {
         // Login
         // Parse games array from string to integer
         steamAccount[0].games = steamAccount[0].games.map(game => parseInt(game));
+
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${steamAccount[0].username} | Sending login request into Steam - Please wait...`);
 
         const steamClient = steamBots.new(steamAccount[0]);
         steamClient.doLogin();
@@ -72,6 +75,7 @@ module.exports = {
         const index = steamAccounts.map(acc => acc.steamClient.id).indexOf(account.id);
 
         if (index >= 0) {
+          client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${account.username} | Sending logout request into Steam - Please wait...`);
           steamAccounts[index].steamClient.doLogOff(index);
         } else {
           // index not found
@@ -82,6 +86,7 @@ module.exports = {
 
       // Login all accounts
       accounts.forEach(account => {
+        client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${account.username} | Sending login request into Steam - Please wait...`);
         setTimeout(() => {
           const steamClient = steamBots.new(account);
           steamClient.doLogin();

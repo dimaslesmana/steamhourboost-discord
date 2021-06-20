@@ -71,7 +71,7 @@ steamBots.new = (account) => {
   client.doLogin = function () {
     try {
       if (this.loginKey && !this.sharedSecret) {
-        replyDiscord(`${log('steam')} ${this.username} | Trying to login using login key - Please wait...`);
+        // replyDiscord(`${log('steam')} ${this.username} | Trying to login using login key - Please wait...`);
         this.logOn({
           accountName: this.username,
           loginKey: this.loginKey,
@@ -79,7 +79,7 @@ steamBots.new = (account) => {
           rememberPassword: true
         });
       } else {
-        replyDiscord(`${log('steam')} ${this.username} | Trying to login using password - Please wait...`);
+        // replyDiscord(`${log('steam')} ${this.username} | Trying to login using password - Please wait...`);
 
         // Decrypt steam password
         const password = decrypt(this.password);
