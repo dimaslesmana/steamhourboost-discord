@@ -71,10 +71,10 @@ module.exports = {
 
         client.users.cache.get(message.author.id).send(`${log('discord')}\n${msg}`);
       } else if (adminCommand === 'restart-boost') {
-        if (steamAccounts.length) {
-          client.users.cache.get(message.author.id).send(`${log('discord')} Cannot continue, some steam account is still running!`);
-          return;
-        }
+        // if (steamAccounts.length) {
+        //   client.users.cache.get(message.author.id).send(`${log('discord')} Cannot continue, some steam account is still running!`);
+        //   return;
+        // }
 
         // Get Steam accounts from db where running status is true
         const accounts = await knex(db.table.steam).where({ is_running: true });
