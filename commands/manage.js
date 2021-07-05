@@ -40,6 +40,9 @@ module.exports = {
         case 'games':
           const games = args[2].split(",");
 
+          // * Games amount should not be higher than 30
+          if (games.length > 30) return;
+
           for (let i = 0; i < games.length; i++) {
             // return if games is not a number
             if (!games[i].match(/^[0-9]+$/g)) {
