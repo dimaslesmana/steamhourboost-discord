@@ -38,9 +38,17 @@ module.exports = {
 
       switch (manageCommand) {
         case 'games':
-          // * Make sure games appid are unique
           const gamesAppId = args[2].split(",");
+          // * Make sure games appid are unique
           const games = [...new Set(gamesAppId)];
+
+          // * Make sure all appid is a number
+          for (let i = 0; i < games.length; i++) {
+            if (!games[i].match(/^[0-9]+$/g)) {
+              client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | All ID must be a number!`);
+              return;
+            }
+          }
 
           // * Games amount should not be higher than 30
           if (games.length > 30) {
@@ -51,13 +59,6 @@ module.exports = {
           if (games.length !== gamesAppId.length) {
             const duplicateCount = gamesAppId.length - games.length;
             client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | ${duplicateCount} duplicate App ID found! - Duplicate removed!`);
-          }
-
-          for (let i = 0; i < games.length; i++) {
-            // return if games is not a number
-            if (!games[i].match(/^[0-9]+$/g)) {
-              return;
-            }
           }
 
           // Update games to database
