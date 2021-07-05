@@ -18,7 +18,7 @@ module.exports = {
         "\n" + `**${prefix}${commands.manage} onlinestatus \`username\` \`(true/false)\`:** Change Steam online status.` +
         "\n" +
         "\n" + `If multiple AppID provided, seperate with \`,\`` +
-        "\n" + `**Example: 730,440*` +
+        "\n" + `*\* Example: 730,440*` +
         "\n" + "---------------------------------"
       );
       return;
@@ -38,7 +38,13 @@ module.exports = {
 
       switch (manageCommand) {
         case 'games':
-          const games = args[2].split(",");
+          // * Make sure games appid are unique
+          const gamesAppId = args[2].split(",");
+          const games = [...new Set(gamesAppId)];
+          if (games.length !== gamesAppId.length) {
+            const duplicateCount = gamesAppId.length - games.length;
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | ${duplicateCount} duplicate App ID found! - Duplicate ignored!`);
+          }
 
           // * Games amount should not be higher than 30
           if (games.length > 30) return;
