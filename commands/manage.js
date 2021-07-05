@@ -41,13 +41,17 @@ module.exports = {
           // * Make sure games appid are unique
           const gamesAppId = args[2].split(",");
           const games = [...new Set(gamesAppId)];
-          if (games.length !== gamesAppId.length) {
-            const duplicateCount = gamesAppId.length - games.length;
-            client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | ${duplicateCount} duplicate App ID found! - Duplicate ignored!`);
-          }
 
           // * Games amount should not be higher than 30
-          if (games.length > 30) return;
+          if (games.length > 30) {
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | Maximum is 30 games`);
+            return;
+          }
+
+          if (games.length !== gamesAppId.length) {
+            const duplicateCount = gamesAppId.length - games.length;
+            client.users.cache.get(user[0].discord_id).send(`${log('discord')} ${username} | ${duplicateCount} duplicate App ID found! - Duplicate removed!`);
+          }
 
           for (let i = 0; i < games.length; i++) {
             // return if games is not a number
