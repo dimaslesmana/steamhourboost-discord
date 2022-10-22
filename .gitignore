@@ -4,3 +4,4 @@ accounts-data/*
 logs/*
 src/db/*.db
 src/prisma/migrations
+!.gitkeep
