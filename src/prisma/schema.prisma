@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model DiscordAccounts {
+  discordId     String          @id
+  licenseCode   LicenseCodes    @relation(fields: [licenseCodeId], references: [id])
+  licenseCodeId Int             @unique
+  steamAccounts SteamAccounts[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("discord_accounts")
+}
+
+model SteamAccounts {
+  id             String          @id @default(cuid())
+  discordOwner   DiscordAccounts @relation(fields: [discordOwnerId], references: [discordId])
+  discordOwnerId String
+  isRunning      Boolean         @default(false)
+  username       String          @unique
+  password       String
+  loginKey       String
+  sharedSecret   String
+  onlineStatus   Boolean         @default(true)
+  games          String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("steam_accounts")
+}
+
+model LicenseType {
+  id           String         @id
+  name         String         @unique
+  licenseCodes LicenseCodes[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@map("license_type")
+}
+
+model LicenseCodes {
+  id             Int              @id @default(autoincrement())
+  code           String           @unique
+  licenseType    LicenseType      @relation(fields: [licenseTypeId], references: [id])
+  licenseTypeId  String
+  isUsed         Boolean          @default(false)
+  discordAccount DiscordAccounts?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@map("license_codes")
+}

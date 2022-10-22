@@ -1,0 +1,33 @@
+{
+  "name": "steamhourboost-discord",
+  "version": "2.0.0",
+  "description": "Boost your Steam Playtime Hours 24/7 non-stop",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/discord-bot/index.js",
+    "dev": "nodemon ./src/discord-bot/index.js",
+    "deploy-commands-guild": "node ./src/discord-bot/deploy-commands.js --guild",
+    "deploy-commands-global": "node ./src/discord-bot/deploy-commands.js --global"
+  },
+  "author": "dimaslesmana",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^1.0.1",
+    "@prisma/client": "^4.2.1",
+    "discord.js": "^14.2.0",
+    "dotenv": "^16.0.1",
+    "nanoid": "^3.3.4",
+    "steam-totp": "^2.1.2",
+    "steam-user": "^4.24.6",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.22.0",
+    "nodemon": "^2.0.19",
+    "prisma": "^4.2.1"
+  },
+  "prisma": {
+    "schema": "./src/prisma/schema.prisma",
+    "seed": "node ./src/prisma/seed.js"
+  }
+}

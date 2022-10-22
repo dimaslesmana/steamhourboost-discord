@@ -1,0 +1,6 @@
+node_modules
+accounts-data/*
+.env
+logs/*
+src/db/*.db
+src/prisma/migrations
