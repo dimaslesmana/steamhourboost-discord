@@ -28,46 +28,50 @@ module.exports = {
                 ))
             .addIntegerOption((option) => option.setName('amount').setDescription('Amount of keys to generate').setRequired(true)))),
   async execute(interaction) {
-    const discordId = interaction.user.id;
-    const subcommand = interaction.options.getSubcommand();
+    try {
+      const discordId = interaction.user.id;
+      const subcommand = interaction.options.getSubcommand();
 
-    if (discordId !== environments.DISCORD_ADMIN_ID) {
-      await interaction.reply({ content: 'You are not authorized to use this command.', ephemeral: true });
-      return;
+      if (discordId !== environments.DISCORD_ADMIN_ID) {
+        await interaction.reply({ content: 'You are not authorized to use this command.', ephemeral: true });
+        return;
+      }
+
+      const commands = {
+        'generate': async () => {
+          try {
+            const licenseType = interaction.options.getString('type');
+            const licenseTypeName = (licenseType === LicenseType.Free) ? 'Free' : 'Premium';
+            const amount = interaction.options.getInteger('amount');
+
+            const licenseKeys = [];
+
+            for (let i = 0; i < amount; i++) {
+              // Generate new license key using nanoid and separate by dashes
+              const licenseKey = nanoid().match(/.{1,4}/g).join('-');
+
+              licenseKeys.push(licenseKey);
+            }
+
+            // Insert new license keys into database
+            await LicenseCode.insert(licenseKeys, licenseType);
+
+            let licenseKeyMsg = '';
+            for (const licenseKey of licenseKeys) {
+              licenseKeyMsg += `- License key: \`${licenseKey}\` **(${licenseTypeName})**\n`;
+            }
+
+            await interaction.reply(`**Generated ${amount} license key(s)**\n${licenseKeyMsg}`);
+          } catch (error) {
+            logger.error(error?.message ?? error);
+            await interaction.reply({ content: 'Failed to generate license key.', ephemeral: true });
+          }
+        },
+      };
+
+      switchFn(commands, 'default')(subcommand);
+    } catch (error) {
+      logger.error(error);
     }
-
-    const commands = {
-      'generate': async () => {
-        const licenseType = interaction.options.getString('type');
-        const licenseTypeName = (licenseType === LicenseType.Free) ? 'Free' : 'Premium';
-        const amount = interaction.options.getInteger('amount');
-
-        try {
-          const licenseKeys = [];
-
-          for (let i = 0; i < amount; i++) {
-            // Generate new license key using nanoid and separate by dashes
-            const licenseKey = nanoid().match(/.{1,4}/g).join('-');
-
-            licenseKeys.push(licenseKey);
-          }
-
-          // Insert new license keys into database
-          await LicenseCode.insert(licenseKeys, licenseType);
-
-          let licenseKeyMsg = '';
-          for (const licenseKey of licenseKeys) {
-            licenseKeyMsg += `- License key: \`${licenseKey}\` **(${licenseTypeName})**\n`;
-          }
-
-          await interaction.reply(`**Generated ${amount} license key(s)**\n${licenseKeyMsg}`);
-        } catch (error) {
-          logger.error(error?.message ?? error);
-          await interaction.reply({ content: 'Failed to generate license key.', ephemeral: true });
-        }
-      },
-    };
-
-    switchFn(commands, 'default')(subcommand);
   },
 };
