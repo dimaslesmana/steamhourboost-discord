@@ -13,8 +13,6 @@ const setBotStatus = (client) => {
       },
     ],
   });
-
-  logger.info('Bot status updated.');
 };
 
 module.exports = {
