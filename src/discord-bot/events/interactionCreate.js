@@ -13,6 +13,16 @@ module.exports = {
       return;
     }
 
+    // Skip if interaction is sent from guild
+    if (interaction.guildId) {
+      return;
+    }
+
+    // Skip if interaction is sent from a bot
+    if (interaction.user.bot) {
+      return;
+    }
+
     const channelName = interaction.channel?.name ? `#${interaction.channel.name}` : 'DM';
 
     logger.info(`${interaction.user.tag} in ${channelName} used command: ${interaction.commandName}`);
