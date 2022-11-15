@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const ms = require('ms');
 const { logger } = require('../../utils/logger');
 
 module.exports = {
@@ -7,6 +8,7 @@ module.exports = {
     .setDescription('Replies with Pong!'),
   async execute(interaction) {
     try {
+      const botUptime = ms(interaction.client.uptime);
       const botLatency = Date.now() - interaction.createdTimestamp;
       const apiLatency = Math.round(interaction.client.ws.ping);
 
@@ -17,8 +19,9 @@ module.exports = {
         .setAuthor({ name: interaction.client.user.username, iconURL: interaction.client.user.avatarURL() })
         .setDescription('This bot is still in development. Please report if you find any issues.')
         .addFields(
-          { name: 'Bot Latency', value: `\`${botLatency}\``, inline: true },
-          { name: 'API Latency', value: `\`${apiLatency}\``, inline: true },
+          { name: 'Bot Uptime', value: `\`${botUptime}\``, inline: true },
+          { name: 'Bot Latency', value: `\`${botLatency} ms\``, inline: true },
+          { name: 'API Latency', value: `\`${apiLatency} ms\``, inline: true },
         )
         .setTimestamp();
 
