@@ -1,3 +1,4 @@
+const environments = require('../../environments');
 const { logger } = require('../../utils/logger');
 
 module.exports = {
@@ -13,8 +14,9 @@ module.exports = {
       return;
     }
 
-    // Skip if interaction is sent from guild
-    if (interaction.guildId) {
+    // Skip if the interaction is sent from guild in production environment
+    if (environments.NODE_ENV === 'production' && interaction.guildId) {
+      await interaction.reply({ content: 'Slash commands are only allowed in DMs.', ephemeral: true });
       return;
     }
 
