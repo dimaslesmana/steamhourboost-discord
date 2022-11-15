@@ -1,7 +1,4 @@
 const { prisma } = require('./prisma.service');
-const { steamBots } = require('../steam-bot');
-const SteamBot = require('../steam-bot/steam-bot');
-
 const { logger } = require('../utils/logger');
 
 class SteamAccount {
@@ -135,40 +132,6 @@ class SteamAccount {
     } catch (error) {
       logger.error(error);
       throw new Error('Failed to set shared secret for Steam account in database');
-    }
-  }
-
-  // * Restart all Steam accounts that are running before the bot was restarted
-  static async RestartAllRunning(client) {
-    try {
-      const steamAccounts = await SteamAccount.getAllRunning();
-
-      if (!steamAccounts.length) {
-        return;
-      }
-
-      logger.info(`Found ${steamAccounts.length} running Steam accounts. Restarting...`);
-
-      for (const steamAccount of steamAccounts) {
-        const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccount.username && bot.isRunning());
-
-        if (steamBot) {
-          continue;
-        }
-
-        steamAccount.games = JSON.parse(steamAccount.games);
-        const newSteamBot = new SteamBot(steamAccount, client);
-
-        // Delay the restart of each Steam account by 5 seconds
-        setTimeout(() => {
-          steamBots.push(newSteamBot);
-          newSteamBot.doLogin();
-        }, 5000);
-      }
-
-      logger.info('Restarted all running Steam accounts.');
-    } catch (error) {
-      logger.error(error);
     }
   }
 }
