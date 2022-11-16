@@ -5,7 +5,7 @@ const SteamAccount = require('../../services/steam-account.service');
 const DiscordAccount = require('../../services/discord-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../helpers/crypto');
-const switchFn = require('../../helpers/switch-function');
+const switchFn = require('../../utils/switch-function.util');
 const { LicenseType } = require('../../types');
 const { logger } = require('../../helpers/logger.helper');
 

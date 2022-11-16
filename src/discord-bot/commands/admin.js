@@ -3,7 +3,7 @@ const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 16);
 const environments = require('../../environments');
 const LicenseCode = require('../../services/license-code.service');
-const switchFn = require('../../helpers/switch-function');
+const switchFn = require('../../utils/switch-function.util');
 const { LicenseType } = require('../../types');
 const { logger } = require('../../helpers/logger.helper');
 
