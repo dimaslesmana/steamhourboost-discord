@@ -18,7 +18,7 @@ const setBotStatus = (client) => {
 };
 
 // * Restart all Steam accounts that are running before the bot was restarted
-const RestartAllRunning = async (client) => {
+const restartAllRunning = async (client) => {
   try {
     const steamAccounts = await SteamAccount.getAllRunning();
 
@@ -64,7 +64,7 @@ module.exports = {
         setBotStatus(client);
       }, 10 * 60 * 1000);
 
-      await RestartAllRunning(client);
+      await restartAllRunning(client);
     } catch (error) {
       logger.error(error);
     }
