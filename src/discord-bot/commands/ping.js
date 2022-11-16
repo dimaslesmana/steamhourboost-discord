@@ -8,7 +8,7 @@ module.exports = {
     .setDescription('Replies with Pong!'),
   async execute(interaction) {
     try {
-      const botUptime = ms(interaction.client.uptime);
+      const botUptime = ms(interaction.client.uptime, { long: true });
       const botLatency = Date.now() - interaction.createdTimestamp;
       const apiLatency = Math.round(interaction.client.ws.ping);
 
