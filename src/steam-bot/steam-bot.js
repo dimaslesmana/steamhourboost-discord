@@ -5,6 +5,7 @@ const { encrypt, decrypt } = require('../helpers/crypto');
 const shuffleArray = require('../helpers/shuffle-array');
 const { BotStatus } = require('../types');
 const { logger } = require('../utils/logger');
+const timestamp = require('../utils/timestamp.util');
 
 class SteamBot {
   #error;
@@ -57,7 +58,9 @@ class SteamBot {
   replyDiscord(message) {
     const { sendDM } = this.#discordClient.functions;
 
-    sendDM(this.getDiscordOwnerId(), message);
+    const msg = `[${timestamp} - ${this.getUsername()}] | ${message}`;
+
+    sendDM(this.getDiscordOwnerId(), msg);
   }
 
   setError(error) {
@@ -179,7 +182,7 @@ class SteamBot {
 
       if (this.getLoginKey() && !this.getSharedSecret()) {
         // * Login using login key
-        this.replyDiscord(`[${this.getUsername()}] | Logging in using login key...`);
+        this.replyDiscord('Logging in using login key...');
 
         this.steamUser.logOn({
           accountName: this.getUsername(),
@@ -189,7 +192,7 @@ class SteamBot {
         });
       } else {
         // * Login using password
-        this.replyDiscord(`[${this.getUsername()}] | Logging in using password...`);
+        this.replyDiscord('Logging in using password...');
 
         this.steamUser.logOn({
           accountName: this.getUsername(),
@@ -202,39 +205,39 @@ class SteamBot {
       logger.error(`${this.getUsername()} | ${error}`);
       this.setError(BotStatus.LoginError);
 
-      this.replyDiscord(`[${this.getUsername()}] | Error while logging in!`);
+      this.replyDiscord('Error while logging in!');
     }
   }
 
   doLogOff(removeAccount = false) {
     try {
       this.setStatus(BotStatus.LoggingOut);
-      this.replyDiscord(`[${this.getUsername()}] | Logging out...`);
+      this.replyDiscord('Logging out...');
 
       this.#toBeRemoved = removeAccount;
       this.steamUser.logOff();
 
       this.setStatus(BotStatus.LoggedOut);
-      this.replyDiscord(`[${this.getUsername()}] | Successfully logged out!`);
+      this.replyDiscord('Successfully logged out!');
     } catch (error) {
       logger.error(`${this.getUsername()} | ${error}`);
       this.setError(BotStatus.LogoutError);
 
-      this.replyDiscord(`[${this.getUsername()}] | Error while logging out!`);
+      this.replyDiscord('Error while logging out!');
     }
   }
 
   restart() {
     try {
       this.setStatus(BotStatus.Relogin);
-      this.replyDiscord(`[${this.getUsername()}] | Relogging in...`);
+      this.replyDiscord('Relogging in...');
 
       this.steamUser.relog();
     } catch (error) {
       logger.error(`${this.getUsername()} | ${error}`);
       this.setError(BotStatus.ReloginError);
 
-      this.replyDiscord(`[${this.getUsername()}] | Error while restarting!`);
+      this.replyDiscord('Error while restarting!');
     }
   }
 
@@ -250,11 +253,11 @@ class SteamBot {
 
           // Set steam online status
           this.steamUser.setPersona(this.getOnlineStatus() ? SteamUser.EPersonaState.Online : SteamUser.EPersonaState.Invisible);
-          this.replyDiscord(`[${this.getUsername()}] | Successfully logged on as \`${this.steamUser.steamID.getSteamID64()}\`!`);
+          this.replyDiscord(`Successfully logged on as \`${this.steamUser.steamID.getSteamID64()}\`!`);
 
           // Start playing games
           this.steamUser.gamesPlayed(shuffleArray(this.getGames()));
-          this.replyDiscord(`[${this.getUsername()}] | Started playing \`${JSON.stringify(this.getGames())}\`!`);
+          this.replyDiscord(`Started playing \`${JSON.stringify(this.getGames())}\`!`);
 
           this.setStatus(BotStatus.BoostStarted);
           break;
@@ -262,14 +265,14 @@ class SteamBot {
           this.setStatus(BotStatus.UnhandledLoggedInEvent(details.eresult));
           logger.warn(`${this.getUsername()} | Unhandled eresult loggedOn event: ${details.eresult}`);
 
-          this.replyDiscord(`[${this.getUsername()}] | Unhandled logged on event: ${details.eresult}`);
+          this.replyDiscord(`Unhandled logged on event: ${details.eresult}`);
           break;
       }
     } catch (error) {
       logger.error(`${this.getUsername()} | ${error}`);
       this.setError(BotStatus.Error(error));
 
-      this.replyDiscord(`[${this.getUsername()}] | Error after logging in!`);
+      this.replyDiscord('Error after logging in!');
     }
   }
 
@@ -280,7 +283,7 @@ class SteamBot {
       const authCode = SteamTotp.generateAuthCode(this.getSharedSecret());
       callback(authCode);
 
-      this.replyDiscord(`[${this.getUsername()}] | Using generated auth code to login \`${authCode}\``);
+      this.replyDiscord(`Using generated auth code to login \`${authCode}\``);
     } else {
       // Reset steam guard auth to null
       this.setSteamGuardAuth(null);
@@ -291,7 +294,7 @@ class SteamBot {
       // Set steam guard callback
       this.setSteamGuardAuth({ message, callback });
 
-      this.replyDiscord(`[${this.getUsername()}] | ${message} required! Please enter the code using \`/boost steam-guard\` command.`);
+      this.replyDiscord(`${message} required! Please enter the code using \`/boost steam-guard\` command.`);
     }
   }
 
@@ -301,7 +304,7 @@ class SteamBot {
 
   onPlayingState(blocked, playingApp) {
     if (blocked) {
-      this.replyDiscord(`[${this.getUsername()}] | Game is being played in another session (AppID is ${playingApp})`);
+      this.replyDiscord(`Game is being played in another session (AppID is ${playingApp})`);
 
       this.setStatus(BotStatus.BlockedFromPlayingGames(playingApp));
     }
@@ -323,7 +326,7 @@ class SteamBot {
 
       switch (error.eresult) {
         case SteamUser.EResult.InvalidPassword:
-          this.replyDiscord(`[${this.getUsername()}] | ERROR: Invalid ${this.getLoginKey() ? 'login key' : 'password'}!`);
+          this.replyDiscord(`ERROR: Invalid ${this.getLoginKey() ? 'login key' : 'password'}!`);
 
           if (this.getLoginKey()) {
             this.setError(BotStatus.InvalidLoginKey);
@@ -332,9 +335,9 @@ class SteamBot {
             this.setLoginKey('');
 
             // Retry login after 5 seconds
-            this.replyDiscord(`[${this.getUsername()}] | Reconnecting in 5 seconds...`);
+            this.replyDiscord('Reconnecting in 5 seconds...');
             setTimeout(() => {
-              this.replyDiscord(`[${this.getUsername()}] | Reconnecting...`);
+              this.replyDiscord('Reconnecting...');
 
               this.doLogin();
             }, 5 * 1000);
@@ -342,23 +345,23 @@ class SteamBot {
             this.setError(BotStatus.InvalidPassword);
             this.doLogOff();
 
-            this.replyDiscord(`[${this.getUsername()}] | Boost stopped! WARNING: Please check your password as soon as possible!`);
+            this.replyDiscord('Boost stopped! WARNING: Please check your password as soon as possible!');
           }
           return;
         case SteamUser.EResult.LoggedInElsewhere:
           this.setError(BotStatus.ErrorLoggedInElsewhere);
 
-          this.replyDiscord(`[${this.getUsername()}] | ERROR: Logged in elsewhere!`);
+          this.replyDiscord('ERROR: Logged in elsewhere!');
           break;
         case SteamUser.EResult.AccountLogonDenied:
           this.setError(BotStatus.SteamGuardRequired);
 
-          this.replyDiscord(`[${this.getUsername()}] | ERROR: Steam Guard required!`);
+          this.replyDiscord('ERROR: Steam Guard required!');
           break;
         case SteamUser.EResult.AccountHasBeenDeleted:
           this.setError(BotStatus.ErrorAccountDeleted);
 
-          this.replyDiscord(`[${this.getUsername()}] | ERROR: Account has been deleted!`);
+          this.replyDiscord('ERROR: Account has been deleted!');
 
           this.doLogOff();
           return;
@@ -366,15 +369,15 @@ class SteamBot {
           this.setError(BotStatus.Error(error));
           logger.warn(`${this.getUsername()} | ERROR: Unhandled eresult error event: ${error.eresult}`);
 
-          this.replyDiscord(`[${this.getUsername()}] | ERROR: Unhandled error event: ${error.eresult}`);
+          this.replyDiscord(`ERROR: Unhandled error event: ${error.eresult}`);
           break;
       }
 
-      this.replyDiscord(`[${this.getUsername()}] | Reconnecting in 40 minutes...`);
+      this.replyDiscord('Reconnecting in 40 minutes...');
 
       // Retry login after 40 minutes
       setTimeout(() => {
-        this.replyDiscord(`[${this.getUsername()}] | Reconnecting...`);
+        this.replyDiscord('Reconnecting...');
 
         this.doLogin();
       }, 40 * 60 * 1000);
@@ -382,7 +385,7 @@ class SteamBot {
       logger.error(`${this.getUsername()} | ${err}`);
       this.setError(BotStatus.Error(err));
 
-      this.replyDiscord(`[${this.getUsername()}] | Error!`);
+      this.replyDiscord('Error!');
     }
   }
 
