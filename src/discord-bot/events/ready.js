@@ -3,7 +3,7 @@ const { steamBots } = require('../../steam-bot');
 const SteamBot = require('../../steam-bot/steam-bot');
 const SteamAccount = require('../../services/steam-account.service');
 
-const { logger } = require('../../utils/logger');
+const { logger } = require('../../helpers/logger.helper');
 
 const setBotStatus = (client) => {
   client.user.setPresence({

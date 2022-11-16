@@ -1,5 +1,5 @@
 const { prisma } = require('./prisma.service');
-const { logger } = require('../utils/logger');
+const { logger } = require('../helpers/logger.helper');
 
 class LicenseCode {
   static async insert(codes, licenseType) {

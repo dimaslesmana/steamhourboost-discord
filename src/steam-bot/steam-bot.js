@@ -4,7 +4,7 @@ const SteamAccount = require('../services/steam-account.service');
 const { encrypt, decrypt } = require('../helpers/crypto');
 const shuffleArray = require('../helpers/shuffle-array');
 const { BotStatus } = require('../types');
-const { logger } = require('../utils/logger');
+const { logger } = require('../helpers/logger.helper');
 const timestamp = require('../utils/timestamp.util');
 
 class SteamBot {

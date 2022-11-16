@@ -7,7 +7,7 @@ const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../helpers/crypto');
 const switchFn = require('../../helpers/switch-function');
 const { LicenseType } = require('../../types');
-const { logger } = require('../../utils/logger');
+const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
   data: new SlashCommandBuilder()

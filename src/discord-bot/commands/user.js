@@ -2,7 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const DiscordAccount = require('../../services/discord-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const switchFn = require('../../helpers/switch-function');
-const { logger } = require('../../utils/logger');
+const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
   data: new SlashCommandBuilder()

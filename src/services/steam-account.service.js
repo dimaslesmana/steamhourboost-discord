@@ -1,5 +1,5 @@
 const { prisma } = require('./prisma.service');
-const { logger } = require('../utils/logger');
+const { logger } = require('../helpers/logger.helper');
 
 class SteamAccount {
   static async insert({ username, password, loginKey, sharedSecret, games, discordOwnerId }) {

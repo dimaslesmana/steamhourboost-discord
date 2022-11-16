@@ -1,5 +1,5 @@
 const environments = require('../../environments');
-const { logger } = require('../../utils/logger');
+const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
   name: 'interactionCreate',
