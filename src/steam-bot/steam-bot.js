@@ -58,7 +58,7 @@ class SteamBot {
   replyDiscord(message) {
     const { sendDM } = this.#discordClient.functions;
 
-    const msg = `[${timestamp} - ${this.getUsername()}] | ${message}`;
+    const msg = `[${timestamp()}] **${this.getUsername()}** | ${message}`;
 
     sendDM(this.getDiscordOwnerId(), msg);
   }
