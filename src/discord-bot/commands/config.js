@@ -31,10 +31,12 @@ module.exports = {
       const discordId = interaction.user.id;
       const subcommand = interaction.options.getSubcommand();
 
+      await interaction.deferReply();
+
       const user = await DiscordAccount.getAccount(discordId);
 
       if (!user) {
-        await interaction.reply('You are not registered yet. Use `/user register` to register your account.');
+        await interaction.editReply('You are not registered yet. Use `/user register` to register your account.');
         return;
       }
 
@@ -46,12 +48,12 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(user.discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.reply('Steam account not found!');
+              await interaction.editReply('Steam account not found!');
               return;
             }
 
             if (!/^\d+(,\d+)*$/.test(games)) {
-              await interaction.reply('Invalid App IDs format! Valid format: `730,440,570`');
+              await interaction.editReply('Invalid App IDs format! Valid format: `730,440,570`');
               return;
             }
 
@@ -61,13 +63,13 @@ module.exports = {
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
 
             if (license.licenseType.id === LicenseType.Free && numberOfGames > 1) {
-              await interaction.reply('You can only add up to 1 game for free license.');
+              await interaction.editReply('You can only add up to 1 game for free license.');
               return;
             }
 
             // Limit games to 30
             if (numberOfGames > 30) {
-              await interaction.reply('You can only add up to 30 games.');
+              await interaction.editReply('You can only add up to 30 games.');
               return;
             }
 
@@ -90,10 +92,10 @@ module.exports = {
 
             const duplicateMesage = (duplicateAppIds.length > 0) ? `**Duplicate App IDs:** \`${duplicateAppIds.join(',')}\`` : '**Duplicate App IDs:** `None`';
 
-            await interaction.reply(`Successfully configured ${gamesArray.length} games for Steam account **${steamUsername}**!\n**Games:** \`${gamesArray.join(',')}\`\n${duplicateMesage}\n\nStart or Restart the boost to apply the changes.`);
+            await interaction.editReply(`Successfully configured ${gamesArray.length} games for Steam account **${steamUsername}**!\n**Games:** \`${gamesArray.join(',')}\`\n${duplicateMesage}\n\nStart or Restart the boost to apply the changes.`);
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply('Failed to configure games for Steam account.');
+            await interaction.editReply('Failed to configure games for Steam account.');
           }
         },
         'online-status': async () => {
@@ -103,16 +105,16 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(user.discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.reply('Steam account not found!');
+              await interaction.editReply('Steam account not found!');
               return;
             }
 
             await SteamAccount.setOnlineStatus(steamAccount.username, onlineStatus);
 
-            await interaction.reply(`Successfully set online status to **${onlineStatus ? 'online' : 'offline'}** for Steam account **${steamUsername}**!\n\nStart or Restart the boost to apply the changes.`);
+            await interaction.editReply(`Successfully set online status to **${onlineStatus ? 'online' : 'offline'}** for Steam account **${steamUsername}**!\n\nStart or Restart the boost to apply the changes.`);
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply('Failed to configure online status for Steam account.');
+            await interaction.editReply('Failed to configure online status for Steam account.');
           }
         },
         'shared-secret': async () => {
@@ -122,16 +124,16 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(user.discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.reply('Steam account not found!');
+              await interaction.editReply('Steam account not found!');
               return;
             }
 
             await SteamAccount.setSharedSecret(steamAccount.username, sharedSecret);
 
-            await interaction.reply(`Successfully ${sharedSecret ? 'configured' : 'removed'} shared secret for Steam account **${steamUsername}**!\n\nStart or Restart the boost to apply the changes.`);
+            await interaction.editReply(`Successfully ${sharedSecret ? 'configured' : 'removed'} shared secret for Steam account **${steamUsername}**!\n\nStart or Restart the boost to apply the changes.`);
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply('Failed to configure shared secret for Steam account.');
+            await interaction.editReply('Failed to configure shared secret for Steam account.');
           }
         },
       };

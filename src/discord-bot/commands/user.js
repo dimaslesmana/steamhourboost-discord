@@ -24,13 +24,15 @@ module.exports = {
       const discordId = interaction.user.id;
       const subcommand = interaction.options.getSubcommand();
 
+      await interaction.deferReply();
+
       const commands = {
         'info': async () => {
           try {
             const user = await DiscordAccount.getAccount(discordId);
 
             if (!user) {
-              await interaction.reply('You are not registered yet. Use `/user register` to register your account.');
+              await interaction.editReply('You are not registered yet. Use `/user register` to register your account.');
               return;
             }
 
@@ -49,10 +51,10 @@ module.exports = {
               .setTimestamp();
 
             await interaction.client.functions.sendDM(discordId, { embeds: [userInfoEmbed] });
-            await interaction.reply('User info sent to your DM.');
+            await interaction.editReply('User info sent to your DM.');
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply('Failed to get user info.');
+            await interaction.editReply('Failed to get user info.');
           }
         },
         'register': async () => {
@@ -61,24 +63,24 @@ module.exports = {
             const user = await DiscordAccount.getAccount(discordId);
 
             if (user) {
-              await interaction.reply('Your Discord account is already registered.');
+              await interaction.editReply('Your Discord account is already registered.');
               return;
             }
 
             const licenseKey = await LicenseCode.getCode(key);
 
             if (!licenseKey || licenseKey?.isUsed) {
-              await interaction.reply({ content: `License key \`${key}\` is invalid.`, ephemeral: true });
+              await interaction.editReply({ content: `License key \`${key}\` is invalid.`, ephemeral: true });
               return;
             }
 
             await DiscordAccount.insert(discordId, key);
             await LicenseCode.updateCodeStatus(key, true);
 
-            await interaction.reply('Successfully registered your Discord account!');
+            await interaction.editReply('Successfully registered your Discord account!');
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply('Failed to register your Discord account.');
+            await interaction.editReply('Failed to register your Discord account.');
           }
         },
         'change-license': async () => {
@@ -87,24 +89,24 @@ module.exports = {
             const user = await DiscordAccount.getAccount(discordId);
 
             if (!user) {
-              await interaction.reply('You are not registered yet. Use `/user register` to register your account.');
+              await interaction.editReply('You are not registered yet. Use `/user register` to register your account.');
               return;
             }
 
             const licenseKey = await LicenseCode.getCode(key);
 
             if (!licenseKey || licenseKey?.isUsed) {
-              await interaction.reply({ content: `License key \`${key}\` is invalid.`, ephemeral: true });
+              await interaction.editReply({ content: `License key \`${key}\` is invalid.`, ephemeral: true });
               return;
             }
 
             await DiscordAccount.updateLicenseCode(discordId, key);
             await LicenseCode.updateCodeStatus(key, true);
 
-            await interaction.reply('Successfully changed your license key!');
+            await interaction.editReply('Successfully changed your license key!');
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply('Failed while changing your license key.');
+            await interaction.editReply('Failed while changing your license key.');
           }
         },
       };
