@@ -81,15 +81,15 @@ module.exports = {
             const account = await SteamAccount.getAccount(discordId, data.username);
 
             if (account) {
-              await interaction.editReply('Steam account already exists.');
+              await interaction.editReply(`Steam account \`${data.username}\` already exists.`);
               return;
             }
 
             await SteamAccount.insert(data);
-            await interaction.editReply('Successfully added new Steam account!');
+            await interaction.editReply(`Successfully added new Steam account! (${data.username})`);
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.editReply('Failed to add new Steam account.');
+            await interaction.editReply('Failed to add new Steam account!');
           }
         },
         'list': async () => {
@@ -116,7 +116,7 @@ module.exports = {
             }
 
             await interaction.client.functions.sendDM(discordId, message);
-            await interaction.editReply('Account list sent to your DM.');
+            await interaction.editReply('Account list sent!');
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to get Steam accounts.');
@@ -130,19 +130,19 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.editReply('Steam account not found.');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
             const steamBot = steamBots.find((bot) => bot.getUsername() === steamUsername);
 
             if (!steamBot) {
-              await interaction.editReply('Steam account not found.');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
             await steamBot.inputSteamGuardCode(code);
-            await interaction.editReply('Successfully set Steam Guard code.');
+            await interaction.editReply(`Successfully set Steam Guard code for \`${steamUsername}\`.`);
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to set Steam Guard code.');
@@ -154,7 +154,7 @@ module.exports = {
             const steamAccountData = await SteamAccount.getAccount(discordId, steamUsername);
 
             if (!steamAccountData) {
-              await interaction.editReply('Steam account not found!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
@@ -162,7 +162,7 @@ module.exports = {
             const steamBotRunning = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
 
             if (steamBotRunning) {
-              await interaction.editReply('Steam account is already being boosted!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` is already being boosted!`);
               return;
             }
 
@@ -176,7 +176,7 @@ module.exports = {
 
             steamBot.doLogin();
 
-            await interaction.editReply('Boost request sent! Please wait for the account to log in.');
+            await interaction.editReply(`Boost request sent to \`${steamUsername}\`! Please wait for the account to log in.`);
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to start boosting Steam account.');
@@ -191,14 +191,14 @@ module.exports = {
               const steamAccountData = await SteamAccount.getAccount(discordId, steamUsername);
 
               if (!steamAccountData) {
-                await interaction.editReply('Steam account not found!');
+                await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
                 return;
               }
 
               const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
 
               if (!steamBot) {
-                await interaction.editReply('Steam account is not being boosted!');
+                await interaction.editReply(`Steam account \`${steamUsername}\` is not being boosted!`);
                 return;
               }
 
@@ -251,7 +251,7 @@ module.exports = {
               return;
             }
 
-            await interaction.editReply('Restart request sent to all Steam accounts! Please wait for the accounts to restart.');
+            await interaction.editReply(`Restart request sent to \`${count}\` accounts! Please wait for the accounts to restart.`);
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to restart boosting Steam account.');
@@ -264,19 +264,19 @@ module.exports = {
             const steamAccountData = await SteamAccount.getAccount(discordId, steamUsername);
 
             if (!steamAccountData) {
-              await interaction.editReply('Steam account not found!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
             const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
 
             if (!steamBot) {
-              await interaction.editReply('Steam account is not being boosted!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` is not being boosted!`);
               return;
             }
 
             steamBot.doLogOff();
-            await interaction.editReply('Stop request sent! Please wait for the account to log off.');
+            await interaction.editReply(`Stop request sent to \`${steamUsername}\`! Please wait for the account to log off.`);
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to stop boosting Steam account.');
@@ -288,7 +288,7 @@ module.exports = {
             const steamAccountData = await SteamAccount.getAccount(discordId, steamUsername);
 
             if (!steamAccountData) {
-              await interaction.editReply('Steam account not found!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
@@ -300,7 +300,7 @@ module.exports = {
             }
 
             await SteamAccount.remove(steamUsername);
-            await interaction.editReply('Successfully removed Steam account!');
+            await interaction.editReply(`Successfully removed Steam account! (${steamUsername})`);
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to remove Steam account.');

@@ -48,7 +48,7 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(user.discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.editReply('Steam account not found!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
@@ -105,7 +105,7 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(user.discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.editReply('Steam account not found!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 
@@ -124,7 +124,7 @@ module.exports = {
             const steamAccount = await SteamAccount.getAccount(user.discordId, steamUsername);
 
             if (!steamAccount) {
-              await interaction.editReply('Steam account not found!');
+              await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
               return;
             }
 

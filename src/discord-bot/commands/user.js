@@ -51,7 +51,7 @@ module.exports = {
               .setTimestamp();
 
             await interaction.client.functions.sendDM(discordId, { embeds: [userInfoEmbed] });
-            await interaction.editReply('User info sent to your DM.');
+            await interaction.editReply('User info sent!');
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to get user info.');
