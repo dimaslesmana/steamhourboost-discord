@@ -172,7 +172,7 @@ module.exports = {
 
             if (steamBotExist) {
               botInstance.setOnlineStatus(steamAccountData.onlineStatus);
-              botInstance.setGames(JSON.parse(steamAccountData.games));
+              botInstance.setGames(steamAccountData.games);
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
