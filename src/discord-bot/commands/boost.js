@@ -170,7 +170,14 @@ module.exports = {
             const botInstance = steamBot ?? new SteamBot(steamAccountData, interaction.client);
             const steamBotExist = steamBots.find((bot) => bot.getUsername() === botInstance.getUsername());
 
-            if (!steamBotExist) {
+            if (steamBotExist) {
+              botInstance.setOnlineStatus(steamAccountData.onlineStatus);
+              botInstance.setGames(JSON.parse(steamAccountData.games));
+
+              // Tell the method below to not do the encryption
+              // since it's already encrypted
+              botInstance.setSharedSecret(steamAccountData.sharedSecret, false);
+            } else {
               steamBots.push(botInstance);
             }
 
