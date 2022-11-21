@@ -94,7 +94,7 @@ module.exports = {
         },
         'list': async () => {
           try {
-            const steamAccounts = steamBots.filter((bot) => bot.getDiscordOwnerId() === discordId);
+            const steamAccounts = await SteamAccount.getAll(discordId);
 
             if (!steamAccounts.length) {
               await interaction.editReply('No Steam accounts found.');
@@ -105,9 +105,9 @@ module.exports = {
             message += '\n----------------------------------------';
 
             for (const [i, account] of steamAccounts.entries()) {
-              const username = account.getUsername();
-              const games = account.getGames();
-              const boostStatus = account.isRunning() ? 'Running' : 'Stopped';
+              const username = account.username;
+              const games = JSON.parse(account.games);
+              const boostStatus = account.isRunning ? 'Running' : 'Stopped';
 
               message += `\n**${i + 1}. ${username}**`;
               message += `\n**Games (${games.length}):** ${games}`;
