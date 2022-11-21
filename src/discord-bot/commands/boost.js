@@ -158,23 +158,23 @@ module.exports = {
               return;
             }
 
-            // Check if Steam account is already being boosted
-            const steamBotRunning = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
+            const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username);
 
-            if (steamBotRunning) {
+            // Check if Steam account is already being boosted
+            if (steamBot?.isRunning()) {
               await interaction.editReply(`Steam account \`${steamUsername}\` is already being boosted!`);
               return;
             }
 
             steamAccountData.games = JSON.parse(steamAccountData.games);
-            const steamBot = new SteamBot(steamAccountData, interaction.client);
-            const steamBotExist = steamBots.find((bot) => bot.getUsername() === steamBot.getUsername());
+            const botInstance = steamBot ?? new SteamBot(steamAccountData, interaction.client);
+            const steamBotExist = steamBots.find((bot) => bot.getUsername() === botInstance.getUsername());
 
             if (!steamBotExist) {
-              steamBots.push(steamBot);
+              steamBots.push(botInstance);
             }
 
-            steamBot.doLogin();
+            botInstance.doLogin();
 
             await interaction.editReply(`Boost request sent to \`${steamUsername}\`! Please wait for the account to log in.`);
           } catch (error) {
