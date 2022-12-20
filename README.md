@@ -1,5 +1,7 @@
 # steamhourboost-discord
 
+This is my fun project. I don't recommend using it on a large scale or even monetizing it.
+
 ---
 
 ## Requirements
