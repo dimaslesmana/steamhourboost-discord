@@ -8,6 +8,8 @@ module.exports = {
     .setDescription('Replies with Pong!'),
   async execute(interaction) {
     try {
+      await interaction.deferReply();
+
       const botUptime = ms(interaction.client.uptime, { long: true });
       const botLatency = Date.now() - interaction.createdTimestamp;
       const apiLatency = Math.round(interaction.client.ws.ping);
@@ -25,10 +27,10 @@ module.exports = {
         )
         .setTimestamp();
 
-      await interaction.reply({ embeds: [pingEmbed], ephemeral: true });
+      await interaction.editReply({ embeds: [pingEmbed], ephemeral: true });
     } catch (error) {
       logger.error(error);
-      await interaction.reply('Failed to get bot latency.');
+      await interaction.editReply('Failed to get bot latency.');
     }
   },
 };

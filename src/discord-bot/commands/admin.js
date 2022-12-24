@@ -32,8 +32,10 @@ module.exports = {
       const discordId = interaction.user.id;
       const subcommand = interaction.options.getSubcommand();
 
+      await interaction.deferReply();
+
       if (discordId !== environments.DISCORD_ADMIN_ID) {
-        await interaction.reply({ content: 'You are not authorized to use this command.', ephemeral: true });
+        await interaction.editReply({ content: 'You are not authorized to use this command.', ephemeral: true });
         return;
       }
 
@@ -61,10 +63,10 @@ module.exports = {
               licenseKeyMsg += `- License key: \`${licenseKey}\` **(${licenseTypeName})**\n`;
             }
 
-            await interaction.reply(`**Generated ${amount} license key(s)**\n${licenseKeyMsg}`);
+            await interaction.editReply(`**Generated ${amount} license key(s)**\n${licenseKeyMsg}`);
           } catch (error) {
             logger.error(error?.message ?? error);
-            await interaction.reply({ content: 'Failed to generate license key.', ephemeral: true });
+            await interaction.editReply({ content: 'Failed to generate license key.', ephemeral: true });
           }
         },
       };

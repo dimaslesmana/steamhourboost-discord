@@ -7,6 +7,8 @@ module.exports = {
     .setDescription('Shows all available commands'),
   async execute(interaction) {
     try {
+      await interaction.deferReply();
+
       const helpEmbed = new EmbedBuilder()
         .setColor(0x0099FF)
         .setTitle('SteamHourBoost - Help')
@@ -21,10 +23,10 @@ module.exports = {
         )
         .setTimestamp();
 
-      await interaction.reply({ embeds: [helpEmbed] });
+      await interaction.editReply({ embeds: [helpEmbed] });
     } catch (error) {
       logger.error(error);
-      await interaction.reply('Failed to show help.');
+      await interaction.editReply('Failed to show help.');
     }
   },
 };
