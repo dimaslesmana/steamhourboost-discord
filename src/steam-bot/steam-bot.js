@@ -187,7 +187,7 @@ class SteamBot {
         this.steamUser.logOn({
           accountName: this.getUsername(),
           loginKey: this.getLoginKey(),
-          machineName: 'Steam-HourBoost',
+          machineName: `SHBD-${this.getDiscordOwnerId()}`,
           rememberPassword: true,
         });
       } else {
@@ -197,7 +197,7 @@ class SteamBot {
         this.steamUser.logOn({
           accountName: this.getUsername(),
           password: decrypt(this.#password),
-          machineName: 'Steam-HourBoost',
+          machineName: `SHBD-${this.getDiscordOwnerId()}`,
           rememberPassword: true,
         });
       }
