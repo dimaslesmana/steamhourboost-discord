@@ -246,7 +246,7 @@ class SteamBot {
       switch (details.eresult) {
         case SteamUser.EResult.OK:
           this.setStatus(BotStatus.LoggedIn);
-          this.setIsRunning(true);
+          await this.setIsRunning(true);
 
           // Reset steam guard auth to null
           this.setSteamGuardAuth(null);
@@ -298,8 +298,8 @@ class SteamBot {
     }
   }
 
-  onLoginKey(loginKey) {
-    this.setLoginKey(loginKey);
+  async onLoginKey(loginKey) {
+    await this.setLoginKey(loginKey);
   }
 
   onPlayingState(blocked, playingApp) {
@@ -319,7 +319,7 @@ class SteamBot {
   async onError(error) {
     try {
       this.setError(BotStatus.Error(error));
-      this.setIsRunning(false);
+      await this.setIsRunning(false);
 
       // Reset steam guard auth to null
       this.setSteamGuardAuth(null);
@@ -332,7 +332,7 @@ class SteamBot {
             this.setError(BotStatus.InvalidLoginKey);
 
             // Reset login key
-            this.setLoginKey('');
+            await this.setLoginKey('');
 
             // Retry login after 5 seconds
             this.replyDiscord('Reconnecting in 5 seconds...');
@@ -389,9 +389,9 @@ class SteamBot {
     }
   }
 
-  onDisconnected() {
+  async onDisconnected() {
     if (!this.#toBeRemoved) {
-      this.setIsRunning(false);
+      await this.setIsRunning(false);
       // Reset steam guard auth to null
       this.setSteamGuardAuth(null);
       this.setStatus(BotStatus.Disconnected);

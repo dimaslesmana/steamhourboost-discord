@@ -141,7 +141,7 @@ module.exports = {
               return;
             }
 
-            await steamBot.inputSteamGuardCode(code);
+            steamBot.inputSteamGuardCode(code);
             await interaction.editReply(`Successfully set Steam Guard code for \`${steamUsername}\`.`);
           } catch (error) {
             logger.error(error?.message ?? error);
@@ -214,7 +214,7 @@ module.exports = {
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
-              steamBot.setLoginKey(steamAccountData.loginKey, false);
+              await steamBot.setLoginKey(steamAccountData.loginKey, false);
               steamBot.setSharedSecret(steamAccountData.sharedSecret, false);
 
               steamBot.restart();
@@ -245,7 +245,7 @@ module.exports = {
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
-              steamBot.setLoginKey(steamAccountData.loginKey, false);
+              await steamBot.setLoginKey(steamAccountData.loginKey, false);
               steamBot.setSharedSecret(steamAccountData.sharedSecret, false);
 
               steamBot.restart();
