@@ -107,11 +107,13 @@ module.exports = {
             for (const [i, account] of steamAccounts.entries()) {
               const username = account.username;
               const games = JSON.parse(account.games);
+              const onlineStatus = account.onlineStatus ? 'Online' : 'Invisible';
               const boostStatus = account.isRunning ? 'Running' : 'Stopped';
 
               message += `\n**${i + 1}. ${username}**`;
               message += `\n**Games (${games.length}):** ${games}`;
-              message += `\n**Status:** ${boostStatus}`;
+              message += `\n**Online Status:** ${onlineStatus}`;
+              message += `\n**Boost Status:** ${boostStatus}`;
               message += '\n----------------------------------------';
             }
 
