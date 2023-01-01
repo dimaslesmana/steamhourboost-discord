@@ -29,7 +29,7 @@ const restartAllRunning = async (client) => {
     logger.info(`Found ${steamAccounts.length} running Steam accounts. Restarting...`);
 
     for (const steamAccount of steamAccounts) {
-      const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccount.username && bot.isRunning());
+      const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccount.username && (bot.isRunning() || steamAccount.isRunning));
 
       if (steamBot) {
         continue;

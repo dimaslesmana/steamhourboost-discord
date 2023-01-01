@@ -204,7 +204,7 @@ module.exports = {
                 return;
               }
 
-              const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
+              const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && (bot.isRunning() || steamAccountData.isRunning));
 
               if (!steamBot) {
                 await interaction.editReply(`Steam account \`${steamUsername}\` is not being boosted!`);
@@ -236,7 +236,7 @@ module.exports = {
             let count = 0;
 
             for (const steamAccountData of steamAccountsData) {
-              const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
+              const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && (bot.isRunning() || steamAccountData.isRunning));
 
               if (!steamBot) {
                 continue;
@@ -277,7 +277,7 @@ module.exports = {
               return;
             }
 
-            const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
+            const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && (bot.isRunning() || steamAccountData.isRunning));
 
             if (!steamBot) {
               await interaction.editReply(`Steam account \`${steamUsername}\` is not being boosted!`);
@@ -301,7 +301,7 @@ module.exports = {
               return;
             }
 
-            const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && bot.isRunning());
+            const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && (bot.isRunning() || steamAccountData.isRunning));
 
             if (steamBot) {
               steamBot.doLogOff(true);
