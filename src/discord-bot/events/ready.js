@@ -35,7 +35,6 @@ const restartAllRunning = async (client) => {
         continue;
       }
 
-      steamAccount.games = JSON.parse(steamAccount.games);
       const newSteamBot = new SteamBot(steamAccount, client);
 
       // Delay the restart of each Steam account by 5 seconds

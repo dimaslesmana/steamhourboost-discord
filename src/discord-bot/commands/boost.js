@@ -73,7 +73,7 @@ module.exports = {
               password: encrypt(interaction.options.getString('password')),
               loginKey: '',
               sharedSecret: encrypt(interaction.options.getString('shared_secret')),
-              games: JSON.stringify([]),
+              games: [],
               discordOwnerId: discordId,
             };
 
@@ -106,14 +106,14 @@ module.exports = {
 
             for (const [i, account] of steamAccounts.entries()) {
               const username = account.username;
-              const games = JSON.parse(account.games);
-              const onlineStatus = account.onlineStatus ? 'Online' : 'Invisible';
               const boostStatus = account.isRunning ? 'Running' : 'Stopped';
+              const onlineStatus = account.onlineStatus ? 'Online' : 'Invisible';
+              const games = account.games;
 
               message += `\n**${i + 1}. ${username}**`;
-              message += `\n**Games (${games.length}):** ${games}`;
-              message += `\n**Online Status:** ${onlineStatus}`;
               message += `\n**Boost Status:** ${boostStatus}`;
+              message += `\n**Online Status:** ${onlineStatus}`;
+              message += `\n**Games (${games.length}):** ${games}`;
               message += '\n----------------------------------------';
             }
 
@@ -168,7 +168,6 @@ module.exports = {
               return;
             }
 
-            steamAccountData.games = JSON.parse(steamAccountData.games);
             const botInstance = steamBot ?? new SteamBot(steamAccountData, interaction.client);
             const steamBotExist = steamBots.find((bot) => bot.getUsername() === botInstance.getUsername());
 
@@ -212,7 +211,7 @@ module.exports = {
               }
 
               steamBot.setOnlineStatus(steamAccountData.onlineStatus);
-              steamBot.setGames(JSON.parse(steamAccountData.games));
+              steamBot.setGames(steamAccountData.games);
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
@@ -243,7 +242,7 @@ module.exports = {
               }
 
               steamBot.setOnlineStatus(steamAccountData.onlineStatus);
-              steamBot.setGames(JSON.parse(steamAccountData.games));
+              steamBot.setGames(steamAccountData.games);
 
               // Tell the method below to not do the encryption
               // since it's already encrypted

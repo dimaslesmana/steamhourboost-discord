@@ -57,7 +57,8 @@ module.exports = {
               return;
             }
 
-            const numberOfGames = games.split(',').length;
+            const appIds = games.split(',');
+            const numberOfGames = appIds.length;
 
             // Limit number of games based on license type
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
@@ -74,7 +75,6 @@ module.exports = {
             }
 
             // Check for duplicate app id
-            const appIds = games.split(',');
             const uniqueAppIds = [...new Set(appIds)];
             const duplicateAppIds = [];
 
@@ -87,6 +87,12 @@ module.exports = {
 
             // Parse App IDs string to integer array
             const gamesArray = uniqueAppIds.map(Number);
+
+            // Check if every app id integer is 32-bit signed integer
+            if (!gamesArray.every((appId) => Number.isInteger(appId) && appId > 0 && appId <= 2147483647)) {
+              await interaction.editReply('Invalid App IDs value range! Valid range: `1` - `2147483647`');
+              return;
+            }
 
             await SteamAccount.setGames(steamAccount.username, gamesArray);
 

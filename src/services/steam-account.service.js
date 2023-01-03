@@ -1,5 +1,6 @@
 const { prisma } = require('./prisma.service');
 const { logger } = require('../helpers/logger.helper');
+const { appIdsToBytes, bytesToAppIds } = require('../utils/steam.util');
 
 class SteamAccount {
   static async insert({ username, password, loginKey, sharedSecret, games, discordOwnerId }) {
@@ -10,7 +11,7 @@ class SteamAccount {
           password,
           loginKey,
           sharedSecret,
-          games,
+          games: appIdsToBytes(games),
           discordOwner: {
             connect: { discordId: discordOwnerId },
           },
@@ -35,13 +36,18 @@ class SteamAccount {
 
   static async getAll(discordId) {
     try {
-      return await prisma.steamAccounts.findMany({
+      const steamAccounts = await prisma.steamAccounts.findMany({
         where: {
           discordOwner: {
             discordId,
           },
         },
       });
+
+      return steamAccounts.map((steamAccount) => ({
+        ...steamAccount,
+        games: bytesToAppIds(steamAccount.games),
+      }));
     } catch (error) {
       logger.error(error);
       throw new Error('Failed to get Steam accounts from database');
@@ -50,9 +56,14 @@ class SteamAccount {
 
   static async getAllRunning() {
     try {
-      return await prisma.steamAccounts.findMany({
+      const steamAccounts = await prisma.steamAccounts.findMany({
         where: { isRunning: true },
       });
+
+      return steamAccounts.map((steamAccount) => ({
+        ...steamAccount,
+        games: bytesToAppIds(steamAccount.games),
+      }));
     } catch (error) {
       logger.error(error);
       throw new Error('Failed to get all running Steam accounts from database');
@@ -61,7 +72,7 @@ class SteamAccount {
 
   static async getAccount(discordId, steamUsername) {
     try {
-      return await prisma.steamAccounts.findFirst({
+      const steamAccount = await prisma.steamAccounts.findFirst({
         where: {
           username: steamUsername,
           discordOwner: {
@@ -69,6 +80,15 @@ class SteamAccount {
           },
         },
       });
+
+      if (!steamAccount) {
+        return null;
+      }
+
+      return {
+        ...steamAccount,
+        games: bytesToAppIds(steamAccount.games),
+      };
     } catch (error) {
       logger.error(error);
       throw new Error('Failed to get Steam account from database');
@@ -103,7 +123,7 @@ class SteamAccount {
     try {
       return await prisma.steamAccounts.update({
         where: { username: steamUsername },
-        data: { games: JSON.stringify(games) },
+        data: { games: appIdsToBytes(games) },
       });
     } catch (error) {
       logger.error(error);
