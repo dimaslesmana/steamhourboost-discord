@@ -4,7 +4,7 @@ const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 16);
 const environments = require('../../environments');
 const LicenseCode = require('../../services/license-code.service');
 const switchFn = require('../../utils/switch-function.util');
-const { LicenseType } = require('../../types');
+const { LICENSE_TYPE } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -23,8 +23,8 @@ module.exports = {
                 .setDescription('License type')
                 .setRequired(true)
                 .addChoices(
-                  { name: 'Free', value: LicenseType.Free },
-                  { name: 'Premium', value: LicenseType.Premium },
+                  { name: 'Free', value: LICENSE_TYPE.FREE },
+                  { name: 'Premium', value: LICENSE_TYPE.PREMIUM },
                 ))
             .addIntegerOption((option) => option.setName('amount').setDescription('Amount of keys to generate').setRequired(true)))),
   async execute(interaction) {
@@ -43,7 +43,7 @@ module.exports = {
         'generate': async () => {
           try {
             const licenseType = interaction.options.getString('type');
-            const licenseTypeName = (licenseType === LicenseType.Free) ? 'Free' : 'Premium';
+            const licenseTypeName = (licenseType === LICENSE_TYPE.FREE) ? 'Free' : 'Premium';
             const amount = interaction.options.getInteger('amount');
 
             const licenseKeys = [];

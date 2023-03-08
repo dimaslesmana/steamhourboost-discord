@@ -4,7 +4,7 @@ const SteamAccount = require('../../services/steam-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
-const { LicenseType } = require('../../types');
+const { LICENSE_TYPE } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -63,7 +63,7 @@ module.exports = {
             // Limit number of games based on license type
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
 
-            if (license.licenseType.id === LicenseType.Free && numberOfGames > 1) {
+            if (license.licenseType.id === LICENSE_TYPE.FREE && numberOfGames > 1) {
               await interaction.editReply('You can only add up to 1 game for free license.');
               return;
             }
