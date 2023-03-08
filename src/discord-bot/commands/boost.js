@@ -7,7 +7,7 @@ const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
 const { splitDiscordMessage } = require('../../utils/discord.util');
-const { MAX_STEAM_USERNAME_LENGTH } = require('../../constants');
+const { MAX_STEAM_USERNAME_LENGTH, MAX_STEAM_PASSWORD_LENGTH } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -64,9 +64,15 @@ module.exports = {
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
             const steamAccounts = await SteamAccount.getAll(discordId);
             const steamUsername = interaction.options.getString('username');
+            const steamPassword = interaction.options.getString('password');
 
             if (steamUsername.length > MAX_STEAM_USERNAME_LENGTH) {
               await interaction.editReply(`Steam username is too long. (Max: ${MAX_STEAM_USERNAME_LENGTH} characters)`);
+              return;
+            }
+
+            if (steamPassword.length > MAX_STEAM_PASSWORD_LENGTH) {
+              await interaction.editReply(`Steam password is too long. (Max: ${MAX_STEAM_PASSWORD_LENGTH} characters)`);
               return;
             }
 
@@ -77,7 +83,7 @@ module.exports = {
 
             const data = {
               username: steamUsername,
-              password: encrypt(interaction.options.getString('password')),
+              password: encrypt(steamPassword),
               loginKey: '',
               sharedSecret: encrypt(interaction.options.getString('shared_secret')),
               games: [],
