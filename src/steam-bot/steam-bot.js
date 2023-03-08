@@ -188,6 +188,7 @@ class SteamBot {
           accountName: this.getUsername(),
           loginKey: this.getLoginKey(),
           machineName: `SHBD-${this.getDiscordOwnerId()}`,
+          clientOS: SteamUser.EOSType.Windows10,
           rememberPassword: true,
         });
       } else {
@@ -198,6 +199,7 @@ class SteamBot {
           accountName: this.getUsername(),
           password: decrypt(this.#password),
           machineName: `SHBD-${this.getDiscordOwnerId()}`,
+          clientOS: SteamUser.EOSType.Windows10,
           rememberPassword: true,
         });
       }
