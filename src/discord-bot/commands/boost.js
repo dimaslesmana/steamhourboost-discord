@@ -6,6 +6,7 @@ const DiscordAccount = require('../../services/discord-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
+const { MAX_STEAM_USERNAME_LENGTH } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -61,6 +62,12 @@ module.exports = {
           try {
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
             const steamAccounts = await SteamAccount.getAll(discordId);
+            const steamUsername = interaction.options.getString('username');
+
+            if (steamUsername.length > MAX_STEAM_USERNAME_LENGTH) {
+              await interaction.editReply(`Steam username is too long. (Max: ${MAX_STEAM_USERNAME_LENGTH} characters)`);
+              return;
+            }
 
             if (steamAccounts.length >= license.licenseType.maxSteamAccounts) {
               await interaction.editReply(`You have reached the maximum number of Steam accounts. (Max: ${license.licenseType.maxSteamAccounts})`);
@@ -68,7 +75,7 @@ module.exports = {
             }
 
             const data = {
-              username: interaction.options.getString('username'),
+              username: steamUsername,
               password: encrypt(interaction.options.getString('password')),
               loginKey: '',
               sharedSecret: encrypt(interaction.options.getString('shared_secret')),

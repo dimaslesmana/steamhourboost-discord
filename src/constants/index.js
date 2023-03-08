@@ -20,6 +20,8 @@ const STEAM_BOT_STATUS = {
   DISCONNECTED: { code: 17, message: 'disconnected' },
 };
 
+const MAX_STEAM_USERNAME_LENGTH = 64;
+
 const LICENSE_TYPE = {
   FREE: {
     id: 'L001',
@@ -35,4 +37,8 @@ const LICENSE_TYPE = {
   },
 };
 
-module.exports = { STEAM_BOT_STATUS, LICENSE_TYPE };
+module.exports = {
+  STEAM_BOT_STATUS,
+  LICENSE_TYPE,
+  MAX_STEAM_USERNAME_LENGTH,
+};
