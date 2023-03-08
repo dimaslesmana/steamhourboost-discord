@@ -6,6 +6,7 @@ const DiscordAccount = require('../../services/discord-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
+const { splitDiscordMessage } = require('../../utils/discord.util');
 const { MAX_STEAM_USERNAME_LENGTH } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
@@ -123,7 +124,18 @@ module.exports = {
               message += '\n----------------------------------------';
             }
 
-            await interaction.client.functions.sendDM(discordId, message);
+            const messages = splitDiscordMessage(message);
+            const messageQueue = messages.map((msg) => () => interaction.user.send(msg));
+            const delay = 500;
+            const sendMessageinterval = setInterval(() => {
+              const messageTask = messageQueue.shift();
+              if (messageTask) {
+                messageTask();
+              } else {
+                clearInterval(sendMessageinterval);
+              }
+            }, delay);
+
             await interaction.editReply('Account list sent!');
           } catch (error) {
             logger.error(error?.message ?? error);
