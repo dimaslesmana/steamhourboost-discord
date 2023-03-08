@@ -23,8 +23,8 @@ module.exports = {
                 .setDescription('License type')
                 .setRequired(true)
                 .addChoices(
-                  { name: 'Free', value: LICENSE_TYPE.FREE },
-                  { name: 'Premium', value: LICENSE_TYPE.PREMIUM },
+                  { name: LICENSE_TYPE.FREE.name, value: LICENSE_TYPE.FREE.id },
+                  { name: LICENSE_TYPE.PREMIUM.name, value: LICENSE_TYPE.PREMIUM.id },
                 ))
             .addIntegerOption((option) => option.setName('amount').setDescription('Amount of keys to generate').setRequired(true)))),
   async execute(interaction) {
@@ -42,8 +42,8 @@ module.exports = {
       const commands = {
         'generate': async () => {
           try {
-            const licenseType = interaction.options.getString('type');
-            const licenseTypeName = (licenseType === LICENSE_TYPE.FREE) ? 'Free' : 'Premium';
+            const licenseTypeId = interaction.options.getString('type');
+            const licenseTypeName = Object.values(LICENSE_TYPE).find((license) => license.id === licenseTypeId).name;
             const amount = interaction.options.getInteger('amount');
 
             const licenseKeys = [];
@@ -56,7 +56,7 @@ module.exports = {
             }
 
             // Insert new license keys into database
-            await LicenseCode.insert(licenseKeys, licenseType);
+            await LicenseCode.insert(licenseKeys, licenseTypeId);
 
             let licenseKeyMsg = '';
             for (const licenseKey of licenseKeys) {

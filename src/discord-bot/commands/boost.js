@@ -6,7 +6,6 @@ const DiscordAccount = require('../../services/discord-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
-const { LICENSE_TYPE } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -63,8 +62,8 @@ module.exports = {
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
             const steamAccounts = await SteamAccount.getAll(discordId);
 
-            if (license.licenseType.id === LICENSE_TYPE.FREE && steamAccounts.length >= 1) {
-              await interaction.editReply('You can only add up to 1 account for free license.');
+            if (steamAccounts.length >= license.licenseType.maxSteamAccounts) {
+              await interaction.editReply(`You have reached the maximum number of Steam accounts. (Max: ${license.licenseType.maxSteamAccounts})`);
               return;
             }
 

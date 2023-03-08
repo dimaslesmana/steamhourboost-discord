@@ -47,6 +47,7 @@ module.exports = {
                 { name: 'Discord ID', value: discordId, inline: true },
                 { name: 'License key', value: license.code, inline: true },
                 { name: 'License type', value: license.licenseType.name, inline: true },
+                { name: 'Limit (Steam Accounts/Steam Games)', value: `(${license.licenseType.maxSteamAccounts}/${license.licenseType.maxSteamGames})`, inline: true },
               )
               .setTimestamp();
 

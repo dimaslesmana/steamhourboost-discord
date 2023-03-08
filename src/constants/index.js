@@ -21,8 +21,18 @@ const STEAM_BOT_STATUS = {
 };
 
 const LICENSE_TYPE = {
-  FREE: 'L001',
-  PREMIUM: 'L002',
+  FREE: {
+    id: 'L001',
+    name: 'Free',
+    maxSteamAccounts: 1,
+    maxSteamGames: 1,
+  },
+  PREMIUM: {
+    id: 'L002',
+    name: 'Premium',
+    maxSteamAccounts: 100,
+    maxSteamGames: 30,
+  },
 };
 
 module.exports = { STEAM_BOT_STATUS, LICENSE_TYPE };

@@ -39,11 +39,13 @@ model SteamAccounts {
 }
 
 model LicenseType {
-  id           String         @id
-  name         String         @unique
-  licenseCodes LicenseCodes[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id               String         @id
+  name             String         @unique
+  maxSteamAccounts Int
+  maxSteamGames    Int
+  licenseCodes     LicenseCodes[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
   @@map("license_type")
 }
