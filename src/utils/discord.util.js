@@ -1,6 +1,6 @@
 const splitDiscordMessage = (text, { maxLength = 2000, char = '\n', prepend = '', append = '' } = {}) => {
   if (text.length <= maxLength) {
-    return text;
+    return [text];
   }
 
   const splitText = text.split(char);
