@@ -13,11 +13,13 @@ const STEAM_BOT_STATUS = {
   UnhandledLoggedInEvent: (eresult) => ({ code: 10, message: 'unhandled_logged_in_event', details: eresult }),
   ERROR_ACCOUNT_DELETED: { code: 11, message: 'account_deleted' },
   ERROR_LOGGED_IN_ELSEWHERE: { code: 12, message: 'logged_in_elsewhere' },
-  INVALID_LOGIN_KEY: { code: 13, message: 'invalid_login_key' },
   INVALID_PASSWORD: { code: 14, message: 'invalid_password' },
   RELOGIN: { code: 15, message: 'relogin' },
   RELOGIN_ERROR: { code: 16, message: 'error_on_relogin' },
   DISCONNECTED: { code: 17, message: 'disconnected' },
+  RESTART: { code: 18, message: 'restart' },
+  RESTART_ERROR: { code: 19, message: 'error_on_restart' },
+  ERROR_LOGON_SESSION_REPLACED: { code: 20, message: 'logon_session_replaced' },
 };
 
 const MAX_STEAM_USERNAME_LENGTH = 64;

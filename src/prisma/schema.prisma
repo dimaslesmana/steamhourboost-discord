@@ -28,8 +28,8 @@ model SteamAccounts {
   isRunning      Boolean         @default(false)
   username       String          @unique
   password       String
-  loginKey       String
   sharedSecret   String
+  refreshToken   Bytes
   onlineStatus   Boolean         @default(true)
   games          Bytes
   createdAt      DateTime        @default(now())

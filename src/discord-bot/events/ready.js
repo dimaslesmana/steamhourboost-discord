@@ -40,7 +40,7 @@ const restartAllRunning = async (client) => {
       // Delay the restart of each Steam account by 5 seconds
       setTimeout(() => {
         steamBots.push(newSteamBot);
-        newSteamBot.doLogin();
+        newSteamBot.start();
       }, 5000);
     }
 

@@ -84,8 +84,8 @@ module.exports = {
             const data = {
               username: steamUsername,
               password: encrypt(steamPassword),
-              loginKey: '',
               sharedSecret: encrypt(interaction.options.getString('shared_secret')),
+              refreshToken: '',
               games: [],
               discordOwnerId: discordId,
             };
@@ -167,6 +167,11 @@ module.exports = {
               return;
             }
 
+            if (!steamBot.getSteamGuardAuth()) {
+              await interaction.editReply(`Steam account \`${steamUsername}\` does not require Steam Guard code at this time.`);
+              return;
+            }
+
             steamBot.inputSteamGuardCode(code);
             await interaction.editReply(`Successfully set Steam Guard code for \`${steamUsername}\`.`);
           } catch (error) {
@@ -206,7 +211,7 @@ module.exports = {
               steamBots.push(botInstance);
             }
 
-            botInstance.doLogin();
+            botInstance.start();
 
             await interaction.editReply(`Boost request sent to \`${steamUsername}\`! Please wait for the account to log in.`);
           } catch (error) {
@@ -239,7 +244,6 @@ module.exports = {
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
-              await steamBot.setLoginKey(steamAccountData.loginKey, false);
               steamBot.setSharedSecret(steamAccountData.sharedSecret, false);
 
               steamBot.restart();
@@ -270,7 +274,6 @@ module.exports = {
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
-              await steamBot.setLoginKey(steamAccountData.loginKey, false);
               steamBot.setSharedSecret(steamAccountData.sharedSecret, false);
 
               steamBot.restart();
@@ -307,7 +310,7 @@ module.exports = {
               return;
             }
 
-            steamBot.doLogOff();
+            steamBot.stop();
             await interaction.editReply(`Stop request sent to \`${steamUsername}\`! Please wait for the account to log off.`);
           } catch (error) {
             logger.error(error?.message ?? error);
@@ -327,7 +330,7 @@ module.exports = {
             const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && (bot.isRunning() || steamAccountData.isRunning));
 
             if (steamBot) {
-              steamBot.doLogOff(true);
+              steamBot.stop(true);
               steamBots.splice(steamBots.indexOf(steamBot), 1);
             }
 
