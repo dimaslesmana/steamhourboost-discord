@@ -28,8 +28,8 @@ model SteamAccounts {
   isRunning      Boolean         @default(false)
   username       String          @unique
   password       String
-  loginKey       String
   sharedSecret   String
+  refreshToken   Bytes
   onlineStatus   Boolean         @default(true)
   games          Bytes
   createdAt      DateTime        @default(now())
@@ -39,11 +39,13 @@ model SteamAccounts {
 }
 
 model LicenseType {
-  id           String         @id
-  name         String         @unique
-  licenseCodes LicenseCodes[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id               String         @id
+  name             String         @unique
+  maxSteamAccounts Int
+  maxSteamGames    Int
+  licenseCodes     LicenseCodes[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
   @@map("license_type")
 }

@@ -1,16 +1,17 @@
 const { prisma } = require('./prisma.service');
 const { logger } = require('../helpers/logger.helper');
 const { appIdsToBytes, bytesToAppIds } = require('../utils/steam.util');
+const { tokenToBytes, bytesToToken } = require('../utils/jwt.util');
 
 class SteamAccount {
-  static async insert({ username, password, loginKey, sharedSecret, games, discordOwnerId }) {
+  static async insert({ username, password, sharedSecret, refreshToken, games, discordOwnerId }) {
     try {
       return await prisma.steamAccounts.create({
         data: {
           username,
           password,
-          loginKey,
           sharedSecret,
+          refreshToken: tokenToBytes(refreshToken),
           games: appIdsToBytes(games),
           discordOwner: {
             connect: { discordId: discordOwnerId },
@@ -46,6 +47,7 @@ class SteamAccount {
 
       return steamAccounts.map((steamAccount) => ({
         ...steamAccount,
+        refreshToken: bytesToToken(steamAccount.refreshToken),
         games: bytesToAppIds(steamAccount.games),
       }));
     } catch (error) {
@@ -62,6 +64,7 @@ class SteamAccount {
 
       return steamAccounts.map((steamAccount) => ({
         ...steamAccount,
+        refreshToken: bytesToToken(steamAccount.refreshToken),
         games: bytesToAppIds(steamAccount.games),
       }));
     } catch (error) {
@@ -87,23 +90,12 @@ class SteamAccount {
 
       return {
         ...steamAccount,
+        refreshToken: bytesToToken(steamAccount.refreshToken),
         games: bytesToAppIds(steamAccount.games),
       };
     } catch (error) {
       logger.error(error);
       throw new Error('Failed to get Steam account from database');
-    }
-  }
-
-  static async setLoginKey(steamUsername, loginKey) {
-    try {
-      return await prisma.steamAccounts.update({
-        where: { username: steamUsername },
-        data: { loginKey },
-      });
-    } catch (error) {
-      logger.error(error);
-      throw new Error('Failed to set login key for Steam account in database');
     }
   }
 
@@ -152,6 +144,18 @@ class SteamAccount {
     } catch (error) {
       logger.error(error);
       throw new Error('Failed to set shared secret for Steam account in database');
+    }
+  }
+
+  static async setRefreshToken(steamUsername, refreshToken) {
+    try {
+      return await prisma.steamAccounts.update({
+        where: { username: steamUsername },
+        data: { refreshToken: tokenToBytes(refreshToken) },
+      });
+    } catch (error) {
+      logger.error(error);
+      throw new Error('Failed to set refresh token for Steam account in database');
     }
   }
 }

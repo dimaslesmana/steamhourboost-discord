@@ -6,7 +6,8 @@ const DiscordAccount = require('../../services/discord-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
-const { LicenseType } = require('../../types');
+const { splitDiscordMessage } = require('../../utils/discord.util');
+const { MAX_STEAM_USERNAME_LENGTH, MAX_STEAM_PASSWORD_LENGTH } = require('../../constants');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -62,17 +63,29 @@ module.exports = {
           try {
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
             const steamAccounts = await SteamAccount.getAll(discordId);
+            const steamUsername = interaction.options.getString('username');
+            const steamPassword = interaction.options.getString('password');
 
-            if (license.licenseType.id === LicenseType.Free && steamAccounts.length >= 1) {
-              await interaction.editReply('You can only add up to 1 account for free license.');
+            if (steamUsername.length > MAX_STEAM_USERNAME_LENGTH) {
+              await interaction.editReply(`Steam username is too long. (Max: ${MAX_STEAM_USERNAME_LENGTH} characters)`);
+              return;
+            }
+
+            if (steamPassword.length > MAX_STEAM_PASSWORD_LENGTH) {
+              await interaction.editReply(`Steam password is too long. (Max: ${MAX_STEAM_PASSWORD_LENGTH} characters)`);
+              return;
+            }
+
+            if (steamAccounts.length >= license.licenseType.maxSteamAccounts) {
+              await interaction.editReply(`You have reached the maximum number of Steam accounts. (Max: ${license.licenseType.maxSteamAccounts})`);
               return;
             }
 
             const data = {
-              username: interaction.options.getString('username'),
-              password: encrypt(interaction.options.getString('password')),
-              loginKey: '',
+              username: steamUsername,
+              password: encrypt(steamPassword),
               sharedSecret: encrypt(interaction.options.getString('shared_secret')),
+              refreshToken: '',
               games: [],
               discordOwnerId: discordId,
             };
@@ -117,7 +130,18 @@ module.exports = {
               message += '\n----------------------------------------';
             }
 
-            await interaction.client.functions.sendDM(discordId, message);
+            const messages = splitDiscordMessage(message);
+            const messageQueue = messages.map((msg) => () => interaction.user.send(msg));
+            const delay = 500;
+            const sendMessageinterval = setInterval(() => {
+              const messageTask = messageQueue.shift();
+              if (messageTask) {
+                messageTask();
+              } else {
+                clearInterval(sendMessageinterval);
+              }
+            }, delay);
+
             await interaction.editReply('Account list sent!');
           } catch (error) {
             logger.error(error?.message ?? error);
@@ -140,6 +164,11 @@ module.exports = {
 
             if (!steamBot) {
               await interaction.editReply(`Steam account \`${steamUsername}\` not found.`);
+              return;
+            }
+
+            if (!steamBot.getSteamGuardAuth()) {
+              await interaction.editReply(`Steam account \`${steamUsername}\` does not require Steam Guard code at this time.`);
               return;
             }
 
@@ -182,7 +211,7 @@ module.exports = {
               steamBots.push(botInstance);
             }
 
-            botInstance.doLogin();
+            botInstance.start();
 
             await interaction.editReply(`Boost request sent to \`${steamUsername}\`! Please wait for the account to log in.`);
           } catch (error) {
@@ -215,7 +244,6 @@ module.exports = {
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
-              await steamBot.setLoginKey(steamAccountData.loginKey, false);
               steamBot.setSharedSecret(steamAccountData.sharedSecret, false);
 
               steamBot.restart();
@@ -246,7 +274,6 @@ module.exports = {
 
               // Tell the method below to not do the encryption
               // since it's already encrypted
-              await steamBot.setLoginKey(steamAccountData.loginKey, false);
               steamBot.setSharedSecret(steamAccountData.sharedSecret, false);
 
               steamBot.restart();
@@ -283,7 +310,7 @@ module.exports = {
               return;
             }
 
-            steamBot.doLogOff();
+            steamBot.stop();
             await interaction.editReply(`Stop request sent to \`${steamUsername}\`! Please wait for the account to log off.`);
           } catch (error) {
             logger.error(error?.message ?? error);
@@ -303,7 +330,7 @@ module.exports = {
             const steamBot = steamBots.find((bot) => bot.getUsername() === steamAccountData.username && (bot.isRunning() || steamAccountData.isRunning));
 
             if (steamBot) {
-              steamBot.doLogOff(true);
+              steamBot.stop(true);
               steamBots.splice(steamBots.indexOf(steamBot), 1);
             }
 

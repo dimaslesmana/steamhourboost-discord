@@ -4,7 +4,6 @@ const SteamAccount = require('../../services/steam-account.service');
 const LicenseCode = require('../../services/license-code.service');
 const { encrypt } = require('../../utils/crypto.util');
 const switchFn = require('../../utils/switch-function.util');
-const { LicenseType } = require('../../types');
 const { logger } = require('../../helpers/logger.helper');
 
 module.exports = {
@@ -63,14 +62,8 @@ module.exports = {
             // Limit number of games based on license type
             const license = await LicenseCode.getCodeById(user.licenseCodeId);
 
-            if (license.licenseType.id === LicenseType.Free && numberOfGames > 1) {
-              await interaction.editReply('You can only add up to 1 game for free license.');
-              return;
-            }
-
-            // Limit games to 30
-            if (numberOfGames > 30) {
-              await interaction.editReply('You can only add up to 30 games.');
+            if (numberOfGames > license.licenseType.maxSteamGames) {
+              await interaction.editReply(`You can only add up to ${license.licenseType.maxSteamGames} games per Steam account!`);
               return;
             }
 
@@ -96,9 +89,9 @@ module.exports = {
 
             await SteamAccount.setGames(steamAccount.username, gamesArray);
 
-            const duplicateMesage = (duplicateAppIds.length > 0) ? `**Duplicate App IDs:** \`${duplicateAppIds.join(',')}\`` : '**Duplicate App IDs:** `None`';
+            const duplicateMessage = (duplicateAppIds.length > 0) ? `**Duplicate App IDs:** \`${duplicateAppIds.join(',')}\`` : '**Duplicate App IDs:** `None`';
 
-            await interaction.editReply(`Successfully configured ${gamesArray.length} games for Steam account **${steamUsername}**!\n**Games:** \`${gamesArray.join(',')}\`\n${duplicateMesage}\n\nStart or Restart the boost to apply the changes.`);
+            await interaction.editReply(`Successfully configured ${gamesArray.length} games for Steam account **${steamUsername}**!\n**Games:** \`${gamesArray.join(',')}\`\n${duplicateMessage}\n\nStart or Restart the boost to apply the changes.`);
           } catch (error) {
             logger.error(error?.message ?? error);
             await interaction.editReply('Failed to configure games for Steam account.');
