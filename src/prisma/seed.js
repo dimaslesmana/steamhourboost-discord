@@ -62,7 +62,7 @@ async function seedDiscordAccount() {
 
 async function main() {
   await seedLicenseType();
-  await seedLicenseCode();
+  // await seedLicenseCode();
   // await seedDiscordAccount();
 }
 
