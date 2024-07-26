@@ -9,7 +9,7 @@ module.exports = {
         '.git',
         'accounts-data/*',
         'logs/*',
-        'src/db/*.db',
+        'src/db/*',
         'src/prisma/migrations',
       ],
       autorestart: true,
