@@ -7,7 +7,8 @@
     "start": "node ./src/discord-bot/index.js",
     "dev": "nodemon ./src/discord-bot/index.js",
     "deploy-commands-guild": "node ./src/discord-bot/deploy-commands.js --guild",
-    "deploy-commands-global": "node ./src/discord-bot/deploy-commands.js --global"
+    "deploy-commands-global": "node ./src/discord-bot/deploy-commands.js --global",
+    "pm2:prod": "pm2 startOrReload ecosystem.config.js --env production --update-env"
   },
   "author": "dimaslesmana",
   "license": "ISC",
